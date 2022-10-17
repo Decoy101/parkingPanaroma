@@ -1,0 +1,65 @@
+{% extends 'admin_templates/base.html' %} {% load static %} {% block title %}
+Dashboard {% endblock title%} {% block main_content %}
+<section class="content">
+  <div class="container-fluid">
+    <br />
+    <div class="row mb-3">
+      <h1 class="col-10">Parking Availability</h1>
+      <button class="col-2" onclick="exportParkingData()">
+        <span class="glyphicon glyphicon-download"></span>
+        Download list
+      </button>
+    </div>
+    <table class="table table-bordered" id="parking-data">
+      <thead>
+        <th scope="col" class="align-middle">Name</th>
+        <th scope="col" class="align-middle">Total Spaces</th>
+        <th scope="col" class="align-middle">Reserved Spaces</th>
+        <th scope="col" class="align-middle">Available Spaces</th>
+      </thead>
+      <tbody>
+        {% for parking in object_list %}
+        <tr>
+          <td>{{parking.name}}</td>
+          <td>{{parking.total}}</td>
+          <td>{{parking.reserved}}</td>
+          <td>{{parking.available}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a href="{% url 'add_parking' %}"><div class="btn btn-primary">Add Parking</div></a>
+  </div>
+</section>
+
+<script>
+  // TO DOWNLOAD THE TABLE
+  function exportParkingData() {
+    var table = document.querySelector("#parking-data");
+
+    var rows = [];
+    for (var i = 0, row; (row = table.rows[i]); i++) {
+      column1 = row.cells[0].innerHTML;
+      column2 = row.cells[1].innerHTML;
+      column3 = row.cells[2].innerHTML;
+      column4 = row.cells[3].innerHTML;
+
+      rows.push([column1, column2, column3, column4]);
+    }
+    csvContent = "data:text/csv;charset=utf-8,";
+
+    rows.forEach(function (rowArray) {
+      row = rowArray.join(",");
+      csvContent += row + "\r\n";
+    });
+
+    var encodeUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodeUri);
+    link.setAttribute("download", "Customer_Data_Report.csv");
+    document.body.appendChild(link);
+    link.click();
+  }
+</script>
+
+{% endblock main_content %}

@@ -1,0 +1,115 @@
+
+
+
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="modal-header">
+            <h3 class="modal-title text-primary">Customer Details</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          
+          <div class="modal-body">
+          
+            <div class="">
+             <strong> Name : </strong>
+              {{ customer.first_name }} {{ customer.last_name }}
+            </div>
+            <div class="">
+              <strong> Room No. : </strong>
+              {{ customer.room_no }}
+            </div>
+            <div>
+                <strong> Scheduled Check-In : </strong>
+                {{customer.check_in}}
+            </div>
+            <div>
+                <strong> Scheduled Check-In : </strong>
+                {{customer.check_out}}
+            </div>
+            <div>
+                <strong>Parking Alloted : </strong>
+                {{customer.car_parking}}
+            </div>
+            {% if customer.is_checked_in and customer.is_checked_out %}
+          <div>
+            <strong>Customer Reservation is Fulfilled</strong>
+          </div>
+          {% endif %}
+
+          {% if not customer.is_checked_in %}
+          <button id="check-in-button" class="btn btn-primary">Check In</button>
+          {% endif %}
+          {% if customer.is_checked_in and not customer.is_checked_out %} 
+          <button id="check-out-button" class="btn btn-danger">Check Out</button>
+          {% endif %}
+
+          </div>
+          
+          
+    </div>
+</section>
+<script>
+
+    $('#check-in-button').click(()=>{
+        $('#check-in-button').prop("disabled",true);
+
+        if("{{ customer.car_parking }}"=="Mandara"){
+            parking1++;
+        }
+        else if("{{ customer.car_parking }}"=="Hotel"){
+            parking2++;
+        }
+        else if("{{ customer.car_parking }}"=="Residence"){
+            parking3++;
+        }
+        else if("{{ customer.car_parking }}"=="CVM"){
+            parking4++;
+        }
+        else if("{{ customer.car_parking }}"=="CVM Vialetto"){
+            parking5++;
+        }
+        else if("{{ customer.car_parking }}"=="Inferno"){
+            parking6++;
+        }
+        
+        console.log(parking2);
+        updateParkingTable();
+        updateStatus("{{customer.id}}","in");
+        
+
+
+    })
+
+    $('#check-out-button').click(()=>{
+
+        $('#check-out-button').prop("disabled",true);
+
+        if("{{ customer.car_parking }}"=="Mandara"){
+            parking1--;
+        }
+        else if("{{ customer.car_parking }}"=="Hotel"){
+            parking2--;
+        }
+        else if("{{ customer.car_parking }}"=="Residence"){
+            parking3--;
+        }
+        else if("{{ customer.car_parking }}"=="CVM"){
+            parking4--;
+        }
+        else if("{{ customer.car_parking }}"=="CVM Vialetto"){
+            parking5--;
+        }
+        else if("{{ customer.car_parking }}"=="Inferno"){
+            parking6--;
+        }
+        console.log(parking2);
+        updateParkingTable();
+        updateStatus("{{customer.id}}","out")
+    })
+
+    
+
+</script>

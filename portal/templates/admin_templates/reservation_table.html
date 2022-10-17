@@ -1,0 +1,61 @@
+
+<section class="content">
+    <div class="container-fluid">
+      <br />
+      <div class="row mb-3">
+        <h1 class="col-10">Dashboard</h1>
+        
+        <button class="col-2" onclick="exportData()">
+          <span class="glyphicon glyphicon-download"></span>
+          Download list
+        </button>
+      </div>
+      <table class="table table-bordered" id="customer-data">
+        <thead>
+          <th scope="col" class="align-middle">SL.No</th>
+          <th scope="col" class="align-middle">Name</th>
+          <th scope="col" class="align-middle">Phone</th>
+          <th scope="col" class="align-middle">Room No.</th>
+          <th scope="col" class="align-middle">Check-In Date</th>
+          <th scope="col" class="align-middle">Check-Out Date</th>
+          <th scope="col" class="align-middle">Car Manufacturer</th>
+          <th scope="col" class="align-middle">Car Model</th>
+          <th scope="col" class="align-middle">Car Plates</th>
+          <th scope="col" class="align-middle">Car color</th>
+          <th scope="col" class="align-middle">Parking Name</th>
+          <th scope="col" class="align-middle">Vehicle Type</th>
+          <th scope="col" class="align-middle">Parking Booked</th>
+          <th scope="col" class="align-middle">Action</th>
+        </thead>
+        <tbody>
+          {% for reservation in object_list %}
+          <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{reservation.first_name}} {{reservation.last_name}}</td>
+            <td>{{reservation.phone_no}}</td>
+            <td>{{reservation.room_no}}</td>
+            <td>{{reservation.check_in | date:'DATETIME_FORMAT'}}</td>
+            <td>{{reservation.check_out}}</td>
+            <td>{{reservation.car_manufacturer}}</td>
+            <td>{{reservation.car_model}}</td>
+            <td>{{reservation.car_plates}}</td>
+            <td>{{reservation.car_color}}</td>
+            <td>{{reservation.car_parking}}</td>
+            <td>{{reservation.vehicle_type}}</td>
+            <td>{{reservation.parking_booking}}</td>
+            <td>
+              <a class="open-customer" data-popup-url="{% url 'customer_details' reservation.id %}">
+                <button type="button" class="btn btn-primary">
+                  <span class="fa fa-eye"></span>
+                </button>
+              </a>
+            </td>
+          </tr>
+          
+        
+          
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>

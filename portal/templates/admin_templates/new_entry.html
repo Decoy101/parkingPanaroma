@@ -1,0 +1,150 @@
+{% extends 'admin_templates/base.html' %}
+{% load static %}
+{% block title %} New Entry {% endblock title%}
+{% block main_content %}
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Create New Entry</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <form role="form" method="POST" action="{% url 'new_entry_save' %}">
+                    {% csrf_token %}
+
+                    
+                            {% comment %} Display Messages {% endcomment %}
+                            {% if messages %}
+                            <div class="form-group">
+                            <div class="col-12">
+                                {% for message in messages %}
+                                {% if message.tags == "error" %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                {% elif message.tags == "success" %}
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            </div>
+                            {% endif %}
+                        
+
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" class="form-control" name="first_name" placeholder="First Name">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" class="form-control" name="last_name" placeholder="Last Name">
+                        </div>
+
+                       <div class="form-group">
+                            <label>Room No.</label>
+                            <input type="text" class="form-control" name="room_no" placeholder="Room No.">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone No.</label>
+                            <input type="integer" class="form-control" name="phone_no" placeholder="Phone No.">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Check in</label>
+                            <input type="datetime-local" class="form-control" name="check_in">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Check Out</label>
+                            <input type="datetime-local" class="form-control" name="check_out">
+                        </div>
+                        <div class="form-group">
+                            <label>Car Manufacturer</label>
+                            <input type="text" class="form-control" name="car_manufacturer">
+                        </div>
+                        <div class="form-group">
+                            <label>Car Model</label>
+                            <input type="text" class="form-control" name="car_model">
+                        </div>
+                        <div class="form-group">
+                            <label>Car Plates</label>
+                            <input type="text" class="form-control" name="car_plates">
+                        </div>
+                        <div class="form-group">
+                            <label>Car Color</label>
+                            <input type="text" class="form-control" name="car_color">
+                        </div>
+                        <div class="form-group">
+                            <label>Parking Name</label>
+                            <select class="form-control" name="car_parking">
+                                <option value="Mandara">Mandara</option>
+                                <option value="Hotel">Hotel</option>
+                                <option value="Residence">Residence</option>
+                                <option value="CVM">CVM</option>
+                                <option value="CVM Vialetto">CVM Vialetto</option>
+                                <option value="Inferno">Inferno</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Vehicle type</label>
+                            <select class="form-control" name="vehicle_type">
+                                <option value="CAR">CAR</option>
+                                <option value="BIKE">BIKE</option>
+                                <option value="SUV">SUV</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Parking Booked</label>
+                            <select class="form-control" name="parking_booking">
+                                <option value="YES">YES</option>
+                                <option value="NO">NO</option>
+                            </select>
+                        </div>
+                        
+                        <!-- <div class="form-group">
+                            <label>Late Check In</label>
+                            <input type="radio" class="form-control" name="late_checkIn" value="true"><label for="late_checkIn">Yes</label>
+                            <input type="radio" class="form-control" name="late_checkIn" value="false"><label for="late_checkIn">No</label>
+                        </div>
+                        <div class="form-group">
+                            <label>Late Check Out</label>
+                            <input type="radio" class="form-control" name="late_checkOut" value="true"><label for="late_checkout">Yes</label>
+                            <input type="radio" class="form-control" name="late_checkOut" value="false"><label for="late_checkout">No</label>
+                        </div>
+                        
+
+                        
+
+
+                    </div>
+                    <!-- /.card-body -->
+
+                    <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Add Entry</button>
+                    </div>
+                </form>
+                </div>
+                <!-- /.card -->
+
+            </div>
+        </div>
+
+    </div><!-- /.container-fluid -->
+  </section>
+{% endblock main_content %}

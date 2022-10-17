@@ -1,0 +1,90 @@
+{% extends 'admin_templates/base.html' %} {% load static %} {% block title %}
+Dashboard {% endblock title%} {% block main_content %}
+
+<script>
+  let parking1 = 0;
+  let parking2 = 0;
+  let parking3 = 0;
+  let parking4 = 0;
+  let parking5 = 0;
+  let parking6 = 0;
+
+
+  var UpdateParkingURL = "{% url 'update_parking' %}"
+  var UpdateStatus = "{% url 'update_status' %}"
+</script>
+
+<div class="container-fluid">
+  <div class="row">
+    
+    <div class="col-12 mb-3">
+    <div class="col-12 mb-3">
+      {% if reservations %}
+          {% include 'admin_templates/reservation_table.html' %}
+          {% include 'admin_templates/_modal.html' %}
+      {% else %}
+        <p class="no-books text-primary">No Reservations.</p>
+      {% endif %}
+      
+    </div>
+    
+  </div>
+</div>
+</div>
+
+
+<script>
+  // Update Parking 
+
+  function updateParkingTable(){
+
+    var data = {'parking1':parking1,'parking2':parking2,'parking3':parking3,'parking4':parking4,'parking5':parking5,'parking6':parking6,'csrfmiddlewaretoken':'{{csrf_token}}'};
+    $.post(UpdateParkingURL,data);
+  }
+  // Right Now, we are just putting the data in the table.
+  // Now the problem, we are facing is to fetch the data from the parking table---update it----and then put it back.
+
+  function updateStatus(a,b){
+    var data = {'customer_id':a,'status':b,'csrfmiddlewaretoken':'{{csrf_token}}'}
+      $.post(UpdateStatus,data)
+    
+  }
+
+</script>
+
+
+
+
+
+
+<script>
+  // TO DOWNLOAD THE TABLE
+  function exportData() {
+    var table = document.querySelector("#customer-data");
+
+    var rows = [];
+    for (var i = 0, row; (row = table.rows[i]); i++) {
+      column1 = row.cells[0].innerHTML;
+      column2 = row.cells[1].innerHTML;
+      column3 = row.cells[2].innerHTML;
+      column4 = row.cells[3].innerHTML;
+      column5 = row.cells[4].innerHTML;
+
+      rows.push([column1, column2, column3, column4, column5]);
+    }
+    csvContent = "data:text/csv;charset=utf-8,";
+
+    rows.forEach(function (rowArray) {
+      row = rowArray.join(",");
+      csvContent += row + "\r\n";
+    });
+
+    var encodeUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodeUri);
+    link.setAttribute("download", "Customer_Data_Report.csv");
+    document.body.appendChild(link);
+    link.click();
+  }
+</script>
+{% endblock main_content %}
