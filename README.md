@@ -4,7 +4,7 @@ Project Parking Panaroma is parking management system made for a private hotel
 ## Build
 ### Start the virtual environment
 ```bash
-source virt/bin/activate
+source venv/bin/activate
 ```
 
 ### Install all dependencies

@@ -68,6 +68,9 @@ class Customer(models.Model):
 class Parking(models.Model):
     name = models.CharField(max_length=100)
     total = models.IntegerField(default = 0)
-    reserved = models.IntegerField(default = 0)
+    max_car = models.IntegerField(default = 0)
+    max_bike = models.IntegerField(default = 0)
+    car_spots_reserved = models.IntegerField(default = 0)
+    bike_spots_reserved = models.IntegerField(default = 0)
     available = models.IntegerField(default = 0)
     objects = models.Manager()

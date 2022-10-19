@@ -30,6 +30,10 @@
                 {{customer.check_out}}
             </div>
             <div>
+              <strong>Vehicle Type </strong>
+              {{customer.vehicle_type}}
+          </div>
+            <div>
                 <strong>Parking Alloted : </strong>
                 {{customer.car_parking}}
             </div>
@@ -56,14 +60,14 @@
 
     $('#check-in-button').click(()=>{
         $('#check-in-button').prop("disabled",true);
-        updateParkingTable("{{customer.car_parking}}","in");
+        updateParkingTable("{{customer.car_parking}}","{{customer.vehicle_type}}","in");
         updateStatus("{{customer.id}}","in");  
     })
 
     $('#check-out-button').click(()=>{
 
         $('#check-out-button').prop("disabled",true);
-        updateParkingTable("{{customer.car_parking}}","out");
+        updateParkingTable("{{customer.car_parking}}","{{customer.vehicle_type}}","out");
         updateStatus("{{customer.id}}","out")
     })
 

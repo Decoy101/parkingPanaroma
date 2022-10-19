@@ -28,8 +28,8 @@ Dashboard {% endblock title%} {% block main_content %}
 <script>
   // Update Parking 
 
-  function updateParkingTable(parking,status){
-    var data = {'parking':parking,'status':status,'csrfmiddlewaretoken':'{{csrf_token}}'};
+  function updateParkingTable(parking,vehicle_type,status){
+    var data = {'parking':parking,'vehicle_type':vehicle_type,'status':status,'csrfmiddlewaretoken':'{{csrf_token}}'};
     $.post(UpdateParkingURL,data);
   }
   // Right Now, we are just putting the data in the table.

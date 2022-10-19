@@ -102,7 +102,16 @@ def new_entry_save(request):
             messages.error(request,'Failed to add new entry')
             return redirect('new_entry')
 
-        
+def delete_entry(request,entry_id):
+    entry = Customer.objects.get(id=entry_id)
+    try:
+        entry.delete()
+        messages.success(request,"Entry Deleted Successfully")
+        return redirect('dashboard')
+    except:
+        messages.error(request,'Parking to delete staff')
+        return redirect('dashboard')
+
 def add_parking(request):
     return render(request,'admin_templates/add_parking_info.html')
 
@@ -113,9 +122,11 @@ def add_parking_save(request):
     else:
         parking_name = request.POST.get('parking_name')
         total_spaces = request.POST.get('parking_available')
+        max_car_spaces = request.POST.get('max_car_spaces')
+        max_bike_spaces = request.POST.get('max_bike_spaces')
 
         try:
-            parking = Parking.objects.create(name=parking_name,total=total_spaces)
+            parking = Parking.objects.create(name=parking_name,total=total_spaces,max_car = max_car_spaces,max_bike = max_bike_spaces)
             Parking.save(parking)
             messages.success(request,'Parking Space Added')
             return redirect('parking')
@@ -167,16 +178,24 @@ def customer_view(request,reservation_id):
 def update_parking(request):
     if request.method == 'POST':
         count = Parking.objects.latest('id').id
+        
         parking = request.POST['parking'];
+        vehicle_type = request.POST['vehicle_type']
         status = request.POST['status']
         for i in range(1,count+1):
             try:
                 if Parking.objects.get(id=i).name == parking:
                     if status == 'in':
-                        Parking.objects.filter(pk=i).update(reserved=Parking.objects.get(id=i).reserved+1);
+                        if vehicle_type == 'CAR':
+                            Parking.objects.filter(pk=i).update(car_spots_reserved=Parking.objects.get(id=i).car_spots_reserved+1)
+                        elif vehicle_type == 'BIKE':
+                            Parking.objects.filter(pk=i).update(bike_spots_reserved=Parking.objects.get(id=i).bike_spots_reserved+1)
                     elif status == 'out':
-                        Parking.objects.filter(pk=i).update(reserved=Parking.objects.get(id=i).reserved-1);
-                    Parking.objects.filter(pk=i).update(available=Parking.objects.get(id=i).total-Parking.objects.get(id=i).reserved);
+                        if vehicle_type == 'CAR':
+                            Parking.objects.filter(pk=i).update(car_spots_reserved=Parking.objects.get(id=i).car_spots_reserved-1)
+                        elif vehicle_type == 'BIKE':
+                            Parking.objects.filter(pk=i).update(bike_spots_reserved=Parking.objects.get(id=i).bike_spots_reserved-1)
+                    Parking.objects.filter(pk=i).update(available=Parking.objects.get(id=i).total - (Parking.objects.get(id=i).car_spots_reserved + Parking.objects.get(id=i).bike_spots_reserved))
                     return HttpResponse('Success')
             except:
                 pass

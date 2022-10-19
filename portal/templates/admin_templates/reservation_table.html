@@ -43,12 +43,13 @@
             <td>{{reservation.car_parking}}</td>
             <td>{{reservation.vehicle_type}}</td>
             <td>{{reservation.parking_booking}}</td>
-            <td>
+            <td class="d-flex justify-between">
               <a class="open-customer" data-popup-url="{% url 'customer_details' reservation.id %}">
                 <button type="button" class="btn btn-primary">
                   <span class="fa fa-eye"></span>
                 </button>
               </a>
+              <a href="{% url 'delete_entry' reservation.id %}" class="btn btn-danger">Delete</a>
             </td>
           </tr>
           

@@ -15,6 +15,7 @@ urlpatterns = [
     path('edit_staff/<staff_id>/', AdminViews.edit_staff, name="edit_staff"),
     path('new_entry',AdminViews.new_entry,name='new_entry'),
     path('new_entry_save',AdminViews.new_entry_save,name='new_entry_save'),
+    path('delete_entry/<entry_id>',AdminViews.delete_entry,name='delete_entry'),
     path('add_parking',AdminViews.add_parking,name='add_parking'),
     path('add_parking_save',AdminViews.add_parking_save,name='add_parking_save'),
     path('delete_parking/<parking_id>',AdminViews.delete_parking,name='delete_parking'),
