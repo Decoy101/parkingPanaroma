@@ -93,12 +93,9 @@
                         <div class="form-group">
                             <label>Parking Name</label>
                             <select class="form-control" name="car_parking">
-                                <option value="Mandara">Mandara</option>
-                                <option value="Hotel">Hotel</option>
-                                <option value="Residence">Residence</option>
-                                <option value="CVM">CVM</option>
-                                <option value="CVM Vialetto">CVM Vialetto</option>
-                                <option value="Inferno">Inferno</option>
+                               {% for option in parking_options %} 
+                               <option value="{{option.name}}">{{option.name}}</option>
+                              {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">

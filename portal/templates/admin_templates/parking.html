@@ -16,6 +16,7 @@ Dashboard {% endblock title%} {% block main_content %}
         <th scope="col" class="align-middle">Total Spaces</th>
         <th scope="col" class="align-middle">Reserved Spaces</th>
         <th scope="col" class="align-middle">Available Spaces</th>
+        <th scope="col" class="align-middle">Actions</th>
       </thead>
       <tbody>
         {% for parking in object_list %}
@@ -24,6 +25,7 @@ Dashboard {% endblock title%} {% block main_content %}
           <td>{{parking.total}}</td>
           <td>{{parking.reserved}}</td>
           <td>{{parking.available}}</td>
+          <td><a href="{% url 'delete_parking' parking.id %}" class="btn btn-danger">Delete</a></td>
         </tr>
         {% endfor %}
       </tbody>

@@ -1,4 +1,6 @@
-#!/Users/umeshgupta/parking_panaroma/parking-panaroma/venv/bin/python3
+#!/bin/sh
+'''exec' "/Users/umeshgupta/Desktop/parking_panaroma copy/parking-panaroma/venv/bin/python3" "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys

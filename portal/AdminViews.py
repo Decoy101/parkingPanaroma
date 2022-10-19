@@ -67,7 +67,11 @@ def delete_staff(request,staff_id):
         return redirect('manage_staff')
 
 def new_entry(request): 
-    return render(request,'admin_templates/new_entry.html')
+    parking_options = Parking.objects.all()
+    context = {
+        "parking_options": parking_options
+    }
+    return render(request,'admin_templates/new_entry.html',context)
 
 def new_entry_save(request):
     if request.method != 'POST':
@@ -114,18 +118,38 @@ def add_parking_save(request):
             parking = Parking.objects.create(name=parking_name,total=total_spaces)
             Parking.save(parking)
             messages.success(request,'Parking Space Added')
-            return redirect('add_parking')
+            return redirect('parking')
         except:
             messages.error(request,'Failed to add new entry')
-            return redirect('add_parking')
+            return redirect('parking')
 
 
-
+def delete_parking(request,parking_id):
+    parking = Parking.objects.get(id=parking_id)
+    try:
+        parking.delete()
+        messages.success(request,"Parking Deleted Successfully")
+        return redirect('parking')
+    except:
+        messages.error(request,'Parking to delete staff')
+        return redirect('parking') 
 
 class ReservationsListView(ListView):
     model = Customer
     template_name = 'admin_templates/dashboard.html'
     context_object_name = 'reservations'
+
+
+def ReservationListView(request):
+    reservations = Customer.objects.all()
+    parking_options = Parking.objects.all()
+
+    context = {
+        "reservations": reservations,
+        "parking_options": parking_options
+    }
+
+    return render(request,'admin_templates/dashboard.html',context)
 
 
 class ParkingListView(ListView):
@@ -142,35 +166,24 @@ def customer_view(request,reservation_id):
 # the sequeces of the Parking Objects are yet to fixed
 def update_parking(request):
     if request.method == 'POST':
-        parking1 = request.POST['parking1'];            
-        Parking.objects.filter(pk=1).update(reserved=Parking.objects.get(id=1).reserved+int(parking1));
-        Parking.objects.filter(pk=1).update(available=Parking.objects.get(id=1).total-Parking.objects.get(id=1).reserved);
-
-        parking2 = request.POST['parking2'];            
-        Parking.objects.filter(pk=2).update(reserved=Parking.objects.get(id=2).reserved+int(parking2));
-        Parking.objects.filter(pk=2).update(available=Parking.objects.get(id=2).total-Parking.objects.get(id=2).reserved);
-
-        parking3 = request.POST['parking3'];            
-        Parking.objects.filter(pk=3).update(reserved=Parking.objects.get(id=3).reserved+int(parking3));
-        Parking.objects.filter(pk=3).update(available=Parking.objects.get(id=3).total-Parking.objects.get(id=3).reserved);
-
-        parking4 = request.POST['parking4'];            
-        Parking.objects.filter(pk=4).update(reserved=Parking.objects.get(id=4).reserved+int(parking4));
-        Parking.objects.filter(pk=4).update(available=Parking.objects.get(id=4).total-Parking.objects.get(id=4).reserved);
-
-        parking5 = request.POST['parking5'];            
-        Parking.objects.filter(pk=5).update(reserved=Parking.objects.get(id=5).reserved+int(parking5));
-        Parking.objects.filter(pk=5).update(available=Parking.objects.get(id=5).total-Parking.objects.get(id=5).reserved);
-
-        parking6 = request.POST['parking6'];            
-        Parking.objects.filter(pk=6).update(reserved=Parking.objects.get(id=6).reserved+int(parking6));
-        Parking.objects.filter(pk=6).update(available=Parking.objects.get(id=6).total-Parking.objects.get(id=6).reserved);
-
-
-        return HttpResponse('Success')
+        count = Parking.objects.latest('id').id
+        parking = request.POST['parking'];
+        status = request.POST['status']
+        for i in range(1,count+1):
+            try:
+                if Parking.objects.get(id=i).name == parking:
+                    if status == 'in':
+                        Parking.objects.filter(pk=i).update(reserved=Parking.objects.get(id=i).reserved+1);
+                    elif status == 'out':
+                        Parking.objects.filter(pk=i).update(reserved=Parking.objects.get(id=i).reserved-1);
+                    Parking.objects.filter(pk=i).update(available=Parking.objects.get(id=i).total-Parking.objects.get(id=i).reserved);
+                    return HttpResponse('Success')
+            except:
+                pass
+              
+    return HttpResponse('Fail')  
         
-        
-    return HttpResponse('Fail')
+
             
 def update_status(request):
     if request.method == 'POST':

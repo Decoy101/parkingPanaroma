@@ -17,6 +17,7 @@ urlpatterns = [
     path('new_entry_save',AdminViews.new_entry_save,name='new_entry_save'),
     path('add_parking',AdminViews.add_parking,name='add_parking'),
     path('add_parking_save',AdminViews.add_parking_save,name='add_parking_save'),
+    path('delete_parking/<parking_id>',AdminViews.delete_parking,name='delete_parking'),
     path('dashboard',AdminViews.ReservationsListView.as_view(), name='dashboard'),
     path('parking',AdminViews.ParkingListView.as_view(),name='parking'),
     path('customer_details/<int:reservation_id>',AdminViews.customer_view,name='customer_details'),    

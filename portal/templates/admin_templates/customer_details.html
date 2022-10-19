@@ -38,6 +38,7 @@
             <strong>Customer Reservation is Fulfilled</strong>
           </div>
           {% endif %}
+          
 
           {% if not customer.is_checked_in %}
           <button id="check-in-button" class="btn btn-primary">Check In</button>
@@ -55,58 +56,14 @@
 
     $('#check-in-button').click(()=>{
         $('#check-in-button').prop("disabled",true);
-
-        if("{{ customer.car_parking }}"=="Mandara"){
-            parking1++;
-        }
-        else if("{{ customer.car_parking }}"=="Hotel"){
-            parking2++;
-        }
-        else if("{{ customer.car_parking }}"=="Residence"){
-            parking3++;
-        }
-        else if("{{ customer.car_parking }}"=="CVM"){
-            parking4++;
-        }
-        else if("{{ customer.car_parking }}"=="CVM Vialetto"){
-            parking5++;
-        }
-        else if("{{ customer.car_parking }}"=="Inferno"){
-            parking6++;
-        }
-        
-        console.log(parking2);
-        updateParkingTable();
-        updateStatus("{{customer.id}}","in");
-        
-
-
+        updateParkingTable("{{customer.car_parking}}","in");
+        updateStatus("{{customer.id}}","in");  
     })
 
     $('#check-out-button').click(()=>{
 
         $('#check-out-button').prop("disabled",true);
-
-        if("{{ customer.car_parking }}"=="Mandara"){
-            parking1--;
-        }
-        else if("{{ customer.car_parking }}"=="Hotel"){
-            parking2--;
-        }
-        else if("{{ customer.car_parking }}"=="Residence"){
-            parking3--;
-        }
-        else if("{{ customer.car_parking }}"=="CVM"){
-            parking4--;
-        }
-        else if("{{ customer.car_parking }}"=="CVM Vialetto"){
-            parking5--;
-        }
-        else if("{{ customer.car_parking }}"=="Inferno"){
-            parking6--;
-        }
-        console.log(parking2);
-        updateParkingTable();
+        updateParkingTable("{{customer.car_parking}}","out");
         updateStatus("{{customer.id}}","out")
     })
 

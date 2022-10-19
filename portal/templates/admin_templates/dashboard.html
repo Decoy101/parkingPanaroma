@@ -2,14 +2,6 @@
 Dashboard {% endblock title%} {% block main_content %}
 
 <script>
-  let parking1 = 0;
-  let parking2 = 0;
-  let parking3 = 0;
-  let parking4 = 0;
-  let parking5 = 0;
-  let parking6 = 0;
-
-
   var UpdateParkingURL = "{% url 'update_parking' %}"
   var UpdateStatus = "{% url 'update_status' %}"
 </script>
@@ -36,9 +28,8 @@ Dashboard {% endblock title%} {% block main_content %}
 <script>
   // Update Parking 
 
-  function updateParkingTable(){
-
-    var data = {'parking1':parking1,'parking2':parking2,'parking3':parking3,'parking4':parking4,'parking5':parking5,'parking6':parking6,'csrfmiddlewaretoken':'{{csrf_token}}'};
+  function updateParkingTable(parking,status){
+    var data = {'parking':parking,'status':status,'csrfmiddlewaretoken':'{{csrf_token}}'};
     $.post(UpdateParkingURL,data);
   }
   // Right Now, we are just putting the data in the table.
