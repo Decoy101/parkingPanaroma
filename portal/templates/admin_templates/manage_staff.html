@@ -1,8 +1,5 @@
 {% extends 'admin_templates/base.html' %}
 
-{% block page_title %}
-    Manage Staff
-{% endblock page_title %}
 
 {% block main_content %}
 
@@ -11,7 +8,6 @@
 <section class="content">
         <div class="container-fluid">
 
-            <a class="btn btn-primary" href="{% url 'add_staff' %}" role="button">+ Add Staff</a> <br/>&nbsp;
 
             {% if messages %}
                                 <div class="form-group">
@@ -61,7 +57,7 @@
                             <table class="table table-hover text-nowrap">
                             <thead>
                                 <tr>
-                                <th>ID</th>
+                                <th></th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Username</th>
@@ -74,7 +70,7 @@
                             <tbody>
                                 {% for staff in staffs %}
                                 <tr>
-                                <td>{{ staff.admin.id }}</td>
+                                <td>{{ forloop.counter }}</td>
                                 <td>{{ staff.admin.first_name }}</td>
                                 <td>{{ staff.admin.last_name }}</td>
                                 <td>{{ staff.admin.username }}</td>
@@ -90,11 +86,13 @@
                                 
                             </tbody>
                             </table>
+                            
                         </div>
+                        
                         <!-- /.card-body -->
                         </div>
                     <!-- /.card -->
-
+                    <a class="btn btn-primary" href="{% url 'add_staff' %}" role="button">+ Add Staff</a> <br/>&nbsp;
                 </div>
             </div>
 

@@ -55,6 +55,39 @@ def edit_staff(request,staff_id):
     }
     return render(request,'admin_templates/edit_staff.html',context)
 
+def edit_staff_save(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method Not Allowed</h2>")
+    else:
+        staff_id = request.POST.get('staff_id')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        address = request.POST.get('address')
+
+        try:
+            # INSERTING into Customuser Model
+            user = CustomUser.objects.get(id=staff_id)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            user.username = username
+            user.save()
+            
+            # INSERTING into Staff Model
+            staff_model = Staffs.objects.get(admin=staff_id)
+            staff_model.address = address
+            staff_model.save()
+
+            messages.success(request, "Staff Updated Successfully.")
+            return redirect('manage_staff')
+
+        except:
+            messages.error(request, "Failed to Update Staff.")
+            return redirect('/edit_staff/'+staff_id)
+
+
 
 def delete_staff(request,staff_id):
     staff = Staffs.objects.get(admin=staff_id)
