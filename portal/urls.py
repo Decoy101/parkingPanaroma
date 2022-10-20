@@ -13,6 +13,7 @@ urlpatterns = [
     path('manage_staff',AdminViews.manage_staff,name="manage_staff"),
     path('delete_staff/<staff_id>',AdminViews.delete_staff,name="delete_staff"),
     path('edit_staff/<staff_id>/', AdminViews.edit_staff, name="edit_staff"),
+    path('edit_staff_save', AdminViews.edit_staff_save, name="edit_staff_save"),
     path('new_entry',AdminViews.new_entry,name='new_entry'),
     path('new_entry_save',AdminViews.new_entry_save,name='new_entry_save'),
     path('delete_entry/<entry_id>',AdminViews.delete_entry,name='delete_entry'),
