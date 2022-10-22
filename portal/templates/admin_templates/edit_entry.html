@@ -1,0 +1,142 @@
+{% extends 'admin_templates/base.html' %}
+
+{% block page_title %}
+    Edit Entry
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% load static %}
+
+<section class="content">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Edit Entry</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form role="form" method="POST" action="{% url 'edit_entry_save' %}">
+                        {% csrf_token %}
+
+                        
+                                {% comment %} Display Messages {% endcomment %}
+                                {% if messages %}
+                                <div class="form-group">
+                                <div class="col-12">
+                                    {% for message in messages %}
+                                    {% if message.tags == "error" %}
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                    {% elif message.tags == "success" %}
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                                </div>
+                                {% endif %}
+                            
+
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" class="form-control" name="first_name" value="{{entry.first_name}}">
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" class="form-control" name="last_name" value ="{{entry.last_name}}">
+                            </div>
+    
+                           <div class="form-group">
+                                <label>Room No.</label>
+                                <input type="text" class="form-control" name="room_no" value = "{{entry.room_no}}">
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Phone No.</label>
+                                <input type="integer" class="form-control" name="phone_no" value = "{{entry.phone_no}}">
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Check in</label>
+                                <input type="datetime-local" class="form-control" name="check_in" value = "{{entry.check_in}}">
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Check Out</label>
+                                <input type="datetime-local" class="form-control" name="check_out" value = "{{entry.check_out}}">
+                            </div>
+                            <div class="form-group">
+                                <label>Car Manufacturer</label>
+                                <input type="text" class="form-control" name="car_manufacturer" value = "{{entry.car_manufacturer}}">
+                            </div>
+                            <div class="form-group">
+                                <label>Car Model</label>
+                                <input type="text" class="form-control" name="car_model" value = "{{entry.car_model}}">
+                            </div>
+                            <div class="form-group">
+                                <label>Car Plates</label>
+                                <input type="text" class="form-control" name="car_plates" value = "{{entry.car_plates}}">
+                            </div>
+                            <div class="form-group">
+                                <label>Car Color</label>
+                                <input type="text" class="form-control" name="car_color" value = "{{entry.car_color}}">
+                            </div>
+                            <div class="form-group">
+                                <label>Parking Name</label>
+                                <select class="form-control" name="car_parking">
+                                   {% for option in parking_options %} 
+                                   <option value="{{option.name}}">{{option.name}}</option>
+                                  {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Vehicle type</label>
+                                <select class="form-control" name="vehicle_type">
+                                    <option value="CAR">CAR</option>
+                                    <option value="BIKE">BIKE</option>
+                                    <option value="SUV">SUV</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Parking Booked</label>
+                                <select class="form-control" name="parking_booking">
+                                    <option value="YES">YES</option>
+                                    <option value="NO">NO</option>
+                                </select>
+                            </div>
+
+                            
+                            <input type="hidden" name="entry_id" value="{{ entry.id }}" />
+
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Update Entry</button>
+                        </div>
+                    </form>
+                    </div>
+                    <!-- /.card -->
+
+                </div>
+            </div>
+
+        </div><!-- /.container-fluid -->
+      </section>
+
+  {% endblock main_content %}

@@ -134,6 +134,56 @@ def new_entry_save(request):
         except:
             messages.error(request,'Failed to add new entry')
             return redirect('new_entry')
+        
+def edit_entry(request,entry_id):
+    entry = Customer.objects.get(id = entry_id)
+    parking_options = Customer.objects.all()
+    context = {
+        'entry':entry,
+        'parking_options': parking_options
+    }
+    return render(request,'admin_templates/edit_entry.html',context)
+
+
+def edit_entry_save(request):
+    entry_id = request.POST.get('entry_id')
+    first_name = request.POST.get('first_name')
+    last_name = request.POST.get('last_name')
+    phone_no = request.POST.get('phone_no')
+    room_no = request.POST.get('room_no')
+    check_in = request.POST.get('check_in')
+    check_out = request.POST.get('check_out')
+    car_manufacturer = request.POST.get('car_manufacturer')
+    car_model = request.POST.get('car_model')
+    car_color = request.POST.get('car_color')
+    car_plates = request.POST.get('car_plates')
+    car_parking = request.POST.get('car_parking')
+    vehicle_type = request.POST.get('vehicle_type')
+    parking_booking = request.POST.get('parking_booking')
+    
+    entry = Customer.objects.get(id=entry_id)
+    entry.first_name = first_name
+    entry.last_name = last_name
+    entry.phone_no = phone_no
+    entry.room_no = room_no
+    entry.check_in = check_in
+    entry.check_out = check_out
+    entry.car_manufacturer = car_manufacturer
+    entry.car_model = car_model
+    entry.car_color = car_color
+    entry.car_plates = car_plates
+    entry.car_parking = car_parking
+    entry.vehicle_type = vehicle_type
+    entry.parking_booking = parking_booking
+    entry.save()
+
+    messages.success(request,'Entry Updated')
+    return redirect('dashboard')
+        
+
+    
+        
+
 
 def delete_entry(request,entry_id):
     entry = Customer.objects.get(id=entry_id)
@@ -166,6 +216,42 @@ def add_parking_save(request):
         except:
             messages.error(request,'Failed to add new entry')
             return redirect('parking')
+
+def edit_parking(request,parking_id):
+    parking = Parking.objects.get(id=parking_id)
+    context = {
+        'parking':parking,
+        'id':parking_id
+    }
+    return render(request,'admin_templates/edit_parking.html',context)
+    
+       
+    
+def edit_parking_save(request):
+    if request.method != 'POST':
+        messages.error(request,'Invalid Request')
+    else:
+        parking_id = request.POST.get('parking_id')
+        name = request.POST.get('name')
+        total = request.POST.get('total_spaces')
+        max_car = request.POST.get('max_car')
+        max_bike = request.POST.get('max_bike')
+        car_spots_reserved = request.POST.get('car_spots_reserved')
+        bike_spots_reserved = request.POST.get('bike_spots_reserved')
+        parking = Parking.objects.get(id=parking_id)
+        parking.name = name
+        parking.total = total
+        parking.max_car = max_car
+        parking.max_bike = max_bike
+        parking.car_spots_reserved = car_spots_reserved
+        parking.bike_spots_reserved = bike_spots_reserved
+        parking.save()
+        parking.available = int(parking.total) - (int(parking.car_spots_reserved)+ int(parking.bike_spots_reserved))
+        parking.save()
+
+        messages.success(request,'Parking Updated Successfully')
+        return redirect('parking')
+        
 
 
 def delete_parking(request,parking_id):
