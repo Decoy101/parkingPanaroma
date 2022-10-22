@@ -1,12 +1,16 @@
 from email import message
 from re import template
 from tabnanny import check
-
+import datetime
 from django.contrib import messages
 from django.shortcuts import HttpResponse, get_object_or_404, redirect, render
 from django.views.generic import DetailView, ListView
 
 from .models import Customer, CustomUser, Parking, Staffs
+import time
+import datetime
+import pytz
+utc=pytz.UTC
 
 
 def Admin_HomePage(request):
@@ -129,6 +133,9 @@ def new_entry_save(request):
         try:
             customer = Customer.objects.create(first_name = first_name,last_name = last_name,phone_no = phone_no, room_no = room_no,check_in = check_in,check_out = check_out,car_manufacturer = car_manufacturer,car_model=car_model,car_color = car_color,car_plates=car_plates,car_parking = car_parking,vehicle_type = vehicle_type,parking_booking = parking_booking)
             Customer.save(customer)
+            if parking_booking == "YES":
+                pre_booking(car_parking)
+            
             messages.success(request,"Entry Added")
             return redirect('new_entry')
         except:
@@ -214,6 +221,7 @@ def update_parking(request):
         
         parking = request.POST['parking'];
         vehicle_type = request.POST['vehicle_type']
+        booking_status = request.POST['booking_status']
         status = request.POST['status']
         for i in range(1,count+1):
             try:
@@ -227,14 +235,27 @@ def update_parking(request):
                         if vehicle_type == 'CAR':
                             Parking.objects.filter(pk=i).update(car_spots_reserved=Parking.objects.get(id=i).car_spots_reserved-1)
                         elif vehicle_type == 'BIKE':
-                            Parking.objects.filter(pk=i).update(bike_spots_reserved=Parking.objects.get(id=i).bike_spots_reserved-1)
-                    Parking.objects.filter(pk=i).update(available=Parking.objects.get(id=i).total - (Parking.objects.get(id=i).car_spots_reserved + Parking.objects.get(id=i).bike_spots_reserved))
+                            Parking.objects.filter(pk=i).update(bike_spots_reserved=Parking.objects.get(id=i).bike_spots_reserved-1)    
+                        Parking.objects.filter(pk=i).update(available=Parking.objects.get(id=i).total - (Parking.objects.get(id=i).car_spots_reserved + Parking.objects.get(id=i).bike_spots_reserved))
+                    # if prebooking is not there then only we need to update the available data cell
+                    
+
                     return HttpResponse('Success')
             except:
                 pass
               
     return HttpResponse('Fail')  
+    
+def pre_booking(name):
+    count = Parking.objects.latest('id').id
+    for i in range(1,count+1):
+        try:
+            if Parking.objects.get(id=i).name == name:
+                Parking.objects.filter(pk=i).update(preBooking=Parking.objects.get(id=i).preBooking + 1)
+        except:
+            pass
         
+    
 
             
 def update_status(request):
@@ -248,3 +269,19 @@ def update_status(request):
 
         return HttpResponse('Success')
     return HttpResponse("Failure")
+
+# def universal_update():
+#     count = Customer.objects.latest('id').id
+#     while True:
+#         time.sleep(1000)
+#         for i in range(1,count+1):
+#             try:
+#                 customer = Customer.objects.get(id=i) 
+#                 if customer.parking_booking == "YES":
+#                     if datetime.datetime.today().timestamp() >= customer.check_in.timestamp():
+#                         pre_booking(customer.car_parking)
+#             except:
+#                 pass
+                
+
+# universal_update()   
