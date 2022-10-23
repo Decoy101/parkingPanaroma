@@ -143,7 +143,11 @@ def new_entry_save(request):
 def delete_entry(request,entry_id):
     entry = Customer.objects.get(id=entry_id)
     try:
+        if entry.parking_booking == 'YES':
+            delete_prebooking(entry.car_parking)
+
         entry.delete()
+
         messages.success(request,"Entry Deleted Successfully")
         return redirect('dashboard')
     except:
@@ -259,7 +263,15 @@ def update_status(request):
         return HttpResponse('Success')
     return HttpResponse("Failure")
 
-
+def delete_prebooking(name):
+    count = Parking.objects.latest('id').id
+    for i in range(1,count+1):
+        try:
+            if Parking.objects.get(id=i).name == name:
+                Parking.objects.filter(pk=i).update(preBooking = Parking.objects.get(id=i).preBooking - 1 )
+        except:
+            pass
+            
 def pre_booking(name):
     count = Parking.objects.latest('id').id
     for i in range(1,count+1):
