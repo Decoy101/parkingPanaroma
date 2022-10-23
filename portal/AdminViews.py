@@ -1,12 +1,17 @@
-from email import message
-from re import template
-from tabnanny import check
-
+import datetime
 from django.contrib import messages
 from django.shortcuts import HttpResponse, get_object_or_404, redirect, render
-from django.views.generic import DetailView, ListView
+from django.views.generic import ListView
 
 from .models import Customer, CustomUser, Parking, Staffs
+import time
+import datetime
+import pytz
+
+from apscheduler.schedulers.background import BackgroundScheduler
+
+
+utc=pytz.UTC
 
 
 def Admin_HomePage(request):
@@ -188,7 +193,11 @@ def edit_entry_save(request):
 def delete_entry(request,entry_id):
     entry = Customer.objects.get(id=entry_id)
     try:
+        if entry.parking_booking == 'YES':
+            delete_prebooking(entry.car_parking)
+
         entry.delete()
+
         messages.success(request,"Entry Deleted Successfully")
         return redirect('dashboard')
     except:
@@ -300,6 +309,7 @@ def update_parking(request):
         
         parking = request.POST['parking'];
         vehicle_type = request.POST['vehicle_type']
+        booking_status = request.POST['booking_status']
         status = request.POST['status']
         for i in range(1,count+1):
             try:
@@ -313,15 +323,19 @@ def update_parking(request):
                         if vehicle_type == 'CAR':
                             Parking.objects.filter(pk=i).update(car_spots_reserved=Parking.objects.get(id=i).car_spots_reserved-1)
                         elif vehicle_type == 'BIKE':
-                            Parking.objects.filter(pk=i).update(bike_spots_reserved=Parking.objects.get(id=i).bike_spots_reserved-1)
-                    Parking.objects.filter(pk=i).update(available=Parking.objects.get(id=i).total - (Parking.objects.get(id=i).car_spots_reserved + Parking.objects.get(id=i).bike_spots_reserved))
+                            Parking.objects.filter(pk=i).update(bike_spots_reserved=Parking.objects.get(id=i).bike_spots_reserved-1)    
+                        Parking.objects.filter(pk=i).update(available=Parking.objects.get(id=i).total - (Parking.objects.get(id=i).car_spots_reserved + Parking.objects.get(id=i).bike_spots_reserved))
+                    # if prebooking is not there then only we need to update the available data cell
+                    
+
                     return HttpResponse('Success')
             except:
                 pass
               
     return HttpResponse('Fail')  
-        
+    
 
+        
             
 def update_status(request):
     if request.method == 'POST':
@@ -334,3 +348,41 @@ def update_status(request):
 
         return HttpResponse('Success')
     return HttpResponse("Failure")
+
+def delete_prebooking(name):
+    count = Parking.objects.latest('id').id
+    for i in range(1,count+1):
+        try:
+            if Parking.objects.get(id=i).name == name:
+                Parking.objects.filter(pk=i).update(preBooking = Parking.objects.get(id=i).preBooking - 1 )
+        except:
+            pass
+            
+def pre_booking(name):
+    count = Parking.objects.latest('id').id
+    for i in range(1,count+1):
+        try:
+            if Parking.objects.get(id=i).name == name:
+                if Parking.objects.get(id=i).available != 0:
+                    Parking.objects.filter(pk=i).update(preBooking=Parking.objects.get(id=i).preBooking + 1)
+                    Parking.objects.filter(pk=i).update(available = Parking.objects.get(id=i).available - 1)
+        except:
+            pass
+
+sched = BackgroundScheduler()
+def prebooking_update():
+    count = Customer.objects.latest('id').id
+    for i in range(1,count+1):
+        try:
+            customer = Customer.objects.get(id=i) 
+            if customer.parking_booking == "YES":
+                if datetime.datetime.today().timestamp() >= customer.check_in.timestamp():
+                    pre_booking(customer.car_parking)
+        except:
+            pass
+    
+                
+sched.add_job(prebooking_update,'interval',seconds=3600)
+sched.start()
+
+ 

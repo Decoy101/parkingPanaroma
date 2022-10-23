@@ -60,7 +60,7 @@
 
     $('#check-in-button').click(()=>{
         $('#check-in-button').prop("disabled",true);
-        updateParkingTable("{{customer.car_parking}}","{{customer.vehicle_type}}","in");
+        updateParkingTable("{{customer.car_parking}}","{{customer.vehicle_type}}","{{customer.parking_booking}}","in");
         updateStatus("{{customer.id}}","in");  
     })
 
