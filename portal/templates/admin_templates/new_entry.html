@@ -94,7 +94,7 @@
                             <label>Parking Name</label>
                             <select class="form-control" name="car_parking">
                                {% for option in parking_options %} 
-                               {% if option.available!= 0 %}
+                               {% if option.available != 0  %}
                                <option value="{{option.name}}">{{option.name}}</option>
                                {% endif %}
                               {% endfor %}
