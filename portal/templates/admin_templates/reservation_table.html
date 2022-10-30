@@ -28,7 +28,7 @@
           <th scope="col" class="align-middle col-4">Actions</th>
         </thead>
         <tbody>
-          {% for reservation in object_list %}
+          {% for reservation in reservations %}
           <tr>
             <td>{{forloop.counter}}</td>
             <td>{{reservation.first_name}} {{reservation.last_name}}</td>
