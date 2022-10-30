@@ -3,12 +3,13 @@ from django.contrib import messages
 from django.shortcuts import HttpResponse, get_object_or_404, redirect, render
 from django.views.generic import ListView
 
+
+from portal.forms import EntryForm
+
 from .models import Customer, CustomUser, Parking, Staffs
 import time
 import datetime
 import pytz
-
-from apscheduler.schedulers.background import BackgroundScheduler
 
 
 utc=pytz.UTC
@@ -105,31 +106,29 @@ def delete_staff(request,staff_id):
         return redirect('manage_staff')
 
 def new_entry(request): 
-    parking_options = Parking.objects.all()
-    context = {
-        "parking_options": parking_options
-    }
-    return render(request,'admin_templates/new_entry.html',context)
+    form = EntryForm
+    return render(request,'admin_templates/new_entry.html',{'form':form})
 
 def new_entry_save(request):
     if request.method != 'POST':
         messages.error(request,'Invalid Request')
         return redirect('new_entry')
     else:
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        phone_no = request.POST.get('phone_no')
-        room_no = request.POST.get('room_no')
-        check_in = request.POST.get('check_in')
-        check_out = request.POST.get('check_out')
-        car_manufacturer = request.POST.get('car_manufacturer')
-        car_model = request.POST.get('car_model')
-        car_color = request.POST.get('car_color')
-        car_plates = request.POST.get('car_plates')
-        car_parking = request.POST.get('car_parking')
-        vehicle_type = request.POST.get('vehicle_type')
-        parking_booking = request.POST.get('parking_booking')
-
+        form = EntryForm(request.POST)
+        if form.is_valid():
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            room_no =form.cleaned_data['room_no']
+            phone_no =form.cleaned_data['phone_no']
+            check_in =form.cleaned_data['check_in']
+            check_out =form.cleaned_data['check_out']
+            car_manufacturer =form.cleaned_data['car_manufacturer']
+            car_model = form.cleaned_data['car_model']
+            car_plates = form.cleaned_data['car_plates']
+            car_color = form.cleaned_data['car_color']
+            car_parking = form.cleaned_data['car_parking']
+            vehicle_type = form.cleaned_data['vehicle_type']
+            parking_booking = form.cleaned_data['parking_booking']
         
         try:
             customer = Customer.objects.create(first_name = first_name,last_name = last_name,phone_no = phone_no, room_no = room_no,check_in = check_in,check_out = check_out,car_manufacturer = car_manufacturer,car_model=car_model,car_color = car_color,car_plates=car_plates,car_parking = car_parking,vehicle_type = vehicle_type,parking_booking = parking_booking)
@@ -291,9 +290,17 @@ def ReservationListView(request):
     return render(request,'admin_templates/dashboard.html',context)
 
 
-class ParkingListView(ListView):
-    model = Parking
-    template_name = 'admin_templates/parking.html'
+def ParkingListView(request):
+    parking_options = Parking.objects.all()
+    context = {
+        'parking_options': parking_options
+    }
+    try:
+        prebooking_update()
+        return render(request,'admin_templates/parking.html',context)
+    except:
+        return render(request,'admin_templates/parking.html',context)
+    
 
 
 
@@ -358,31 +365,23 @@ def delete_prebooking(name):
         except:
             pass
             
-def pre_booking(name):
-    count = Parking.objects.latest('id').id
-    for i in range(1,count+1):
-        try:
-            if Parking.objects.get(id=i).name == name:
-                if Parking.objects.get(id=i).available != 0:
-                    Parking.objects.filter(pk=i).update(preBooking=Parking.objects.get(id=i).preBooking + 1)
-                    Parking.objects.filter(pk=i).update(available = Parking.objects.get(id=i).available - 1)
-        except:
-            pass
 
-sched = BackgroundScheduler()
 def prebooking_update():
     count = Customer.objects.latest('id').id
     for i in range(1,count+1):
         try:
             customer = Customer.objects.get(id=i) 
-            if customer.parking_booking == "YES":
-                if datetime.datetime.today().timestamp() >= customer.check_in.timestamp():
-                    pre_booking(customer.car_parking)
+            if customer.prebooking_marked == False:
+                if customer.parking_booking == "Yes":
+                    if datetime.datetime.today().timestamp() >= customer.check_in.timestamp():
+                        customer.prebooking_marked = True
+                        customer.car_parking.preBooking +=1
+                        customer.car_parking.available -=1
+                        customer.car_parking.save() 
         except:
             pass
     
                 
-sched.add_job(prebooking_update,'interval',seconds=3600)
-sched.start()
+
 
  

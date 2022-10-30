@@ -23,7 +23,7 @@ Dashboard {% endblock title%} {% block main_content %}
         <th scope="col" class="align-middle">Actions</th>
       </thead>
       <tbody>
-        {% for parking in object_list %}
+        {% for parking in parking_options %}
         <tr>
           <td class="align-middle">{{parking.name}}</td>
           <td class="align-middle">{{parking.total}}</td>

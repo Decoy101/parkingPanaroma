@@ -1,5 +1,6 @@
 from datetime import datetime, time, timezone
 from email.policy import default
+from random import choices
 from secrets import choice
 
 from django.conf import settings
@@ -46,6 +47,21 @@ def save_user_profile(sender, instance, **kwargs):
     if instance.user_type == 2:
         instance.staffs.save()
 
+
+class Parking(models.Model):
+    name = models.CharField(max_length=100)
+    total = models.IntegerField(default = 0)
+    max_car = models.IntegerField(default = 0)
+    max_bike = models.IntegerField(default = 0)
+    car_spots_reserved = models.IntegerField(default = 0)
+    bike_spots_reserved = models.IntegerField(default = 0)
+    available = models.IntegerField(default = 0)
+    preBooking = models.IntegerField(default = 0)
+    objects = models.Manager()
+
+    def __str__(self):
+        return self.name
+    
 class Customer(models.Model):
     first_name = models.CharField(max_length=100,blank=True)
     last_name = models.CharField(max_length=100,blank=True)
@@ -57,21 +73,14 @@ class Customer(models.Model):
     car_model = models.CharField(max_length=100,blank=True)
     car_plates = models.CharField(max_length=10,blank=True)
     car_color = models.CharField(max_length=10,blank=True)
-    car_parking = models.CharField(max_length=100,blank=True)
+    car_parking = models.ForeignKey(Parking,on_delete=models.CASCADE)
     vehicle_type = models.CharField(max_length=100,blank=True)
-    parking_booking = models.CharField(max_length=100,blank=True)
+    _choices = (
+        ('Yes',"Yes"),
+        ('No',"No")
+    )
+    parking_booking = models.CharField(max_length=3,choices=_choices,blank=True)
+    prebooking_marked = models.BooleanField(default=False)
     is_checked_in = models.BooleanField(default=False)
     is_checked_out = models.BooleanField(default=False)
-    objects = models.Manager()
-   
-
-class Parking(models.Model):
-    name = models.CharField(max_length=100)
-    total = models.IntegerField(default = 0)
-    max_car = models.IntegerField(default = 0)
-    max_bike = models.IntegerField(default = 0)
-    car_spots_reserved = models.IntegerField(default = 0)
-    bike_spots_reserved = models.IntegerField(default = 0)
-    available = models.IntegerField(default = 0)
-    preBooking = models.IntegerField(default = 0)
     objects = models.Manager()
