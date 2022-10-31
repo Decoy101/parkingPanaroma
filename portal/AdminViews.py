@@ -1,9 +1,10 @@
 import datetime
+from sqlite3 import Timestamp
 from django.contrib import messages
 from django.shortcuts import HttpResponse, get_object_or_404, redirect, render
 from django.views.generic import ListView
 
-
+from django.db.models import Count
 from portal.forms import EntryForm
 
 from .models import Customer, CustomUser, Parking, Staffs
@@ -207,14 +208,14 @@ def ReservationListView(request):
 def ParkingListView(request):
     parking_options = Parking.objects.all()
     context = {
-        'parking_options': parking_options
+        'parking_options': parking_options,
     }
-    try:
-        prebooking_update()
-        return render(request,'admin_templates/parking.html',context)
-    except:
-        return render(request,'admin_templates/parking.html',context)
-    
+    if request.method == 'POST':
+        date = request.POST['date']
+    else:
+        date = datetime.datetime.today().strftime("%Y-%m-%d")
+    prebooking_update(date)
+    return render(request,'admin_templates/parking.html',context)
 
 
 
@@ -278,24 +279,30 @@ def delete_prebooking(name):
                 Parking.objects.filter(pk=i).update(preBooking = Parking.objects.get(id=i).preBooking - 1 )
         except:
             pass
-            
 
-def prebooking_update():
-    count = Customer.objects.latest('id').id
-    for i in range(1,count+1):
-        try:
-            customer = Customer.objects.get(id=i) 
-            if customer.prebooking_marked == False:
-                if customer.parking_booking == "Yes":
-                    if datetime.datetime.today().timestamp() >= customer.check_in.timestamp():
-                        customer.prebooking_marked = True
-                        customer.car_parking.preBooking +=1
-                        customer.car_parking.available -=1
-                        customer.car_parking.save() 
-        except:
-            pass
+                            
+# def prebooking_update():
+#     count = Customer.objects.latest('id').id
+#     for i in range(1,count+1):
+#         try:
+#             customer = Customer.objects.get(id=i) 
+#             if customer.prebooking_marked == False:
+#                 if customer.parking_booking == "Yes":
+#                     if datetime.datetime.today().timestamp() >= customer.check_in.timestamp():
+#                         customer.prebooking_marked = True
+#                         customer.car_parking.preBooking +=1
+#                         customer.car_parking.available -=1
+#                         customer.prebooking_marked  = 1
+#                         customer.car_parking.save() 
+#         except:
+#             pass
     
-                
+def prebooking_update(date):
+    reservations = Customer.objects.all().filter(check_in__exact=date).values('car_parking').annotate(prebooking_count=Count('car_parking'))
+    for reservation in reservations:
+        Parking.objects.filter(id=int(reservation['car_parking'])).update(preBooking=int(reservation['prebooking_count']))
 
+
+    
 
  
