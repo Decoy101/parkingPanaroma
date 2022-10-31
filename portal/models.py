@@ -80,7 +80,6 @@ class Customer(models.Model):
         ('No',"No")
     )
     parking_booking = models.CharField(max_length=3,choices=_choices,blank=True)
-    prebooking_marked = models.BooleanField(default=False)
     is_checked_in = models.BooleanField(default=False)
     is_checked_out = models.BooleanField(default=False)
     objects = models.Manager()
