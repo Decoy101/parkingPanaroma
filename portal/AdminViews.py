@@ -3,7 +3,7 @@ from sqlite3 import Timestamp
 from django.contrib import messages
 from django.shortcuts import HttpResponse, get_object_or_404, redirect, render
 from django.views.generic import ListView
-
+from django.db.models import Subquery, F
 from django.db.models import Count
 from portal.forms import EntryForm
 
@@ -296,11 +296,7 @@ def ParkingListView(request):
     context = {
         'parking_options': parking_options,
     }
-    if request.method == 'POST':
-        date = request.POST['date']
-    else:
-        date = datetime.datetime.today().strftime("%Y-%m-%d")
-    prebooking_update(date)
+    pre_update()
     return render(request,'admin_templates/parking.html',context)
 
 
@@ -313,33 +309,28 @@ def customer_view(request,reservation_id):
 # the sequeces of the Parking Objects are yet to fixed
 def update_parking(request):
     if request.method == 'POST':
-        count = Parking.objects.latest('id').id
-        
-        parking = request.POST['parking'];
+        customer_id = request.POST['customer_id'];
         vehicle_type = request.POST['vehicle_type']
-        booking_status = request.POST['booking_status']
         status = request.POST['status']
-        for i in range(1,count+1):
-            try:
-                if Parking.objects.get(id=i).name == parking:
-                    if status == 'in':
-                        if vehicle_type == 'CAR':
-                            Parking.objects.filter(pk=i).update(car_spots_reserved=Parking.objects.get(id=i).car_spots_reserved+1)
-                        elif vehicle_type == 'BIKE':
-                            Parking.objects.filter(pk=i).update(bike_spots_reserved=Parking.objects.get(id=i).bike_spots_reserved+1)
-                    elif status == 'out':
-                        if vehicle_type == 'CAR':
-                            Parking.objects.filter(pk=i).update(car_spots_reserved=Parking.objects.get(id=i).car_spots_reserved-1)
-                        elif vehicle_type == 'BIKE':
-                            Parking.objects.filter(pk=i).update(bike_spots_reserved=Parking.objects.get(id=i).bike_spots_reserved-1)    
-                        Parking.objects.filter(pk=i).update(available=Parking.objects.get(id=i).total - (Parking.objects.get(id=i).car_spots_reserved + Parking.objects.get(id=i).bike_spots_reserved))
-                    # if prebooking is not there then only we need to update the available data cell
-                    
-
-                    return HttpResponse('Success')
-            except:
-                pass
-              
+        customer = Customer.objects.get(id=int(customer_id))
+        if status=='in':
+            if vehicle_type=='CAR':
+                customer.car_parking.car_spots_reserved+=1
+            elif vehicle_type=='BIKE':
+                customer.car_parking.bike_spots_reserved+=1
+                
+            customer.car_parking.available -=1        
+            customer.car_parking.save()
+        elif status=='out':
+            if vehicle_type=='CAR':
+                customer.car_parking.car_spots_reserved-=1
+            elif vehicle_type=='BIKE':
+                customer.car_parking.bike_spots_reserved-=1
+                
+            customer.car_parking.available +=1        
+            customer.car_parking.save()
+        return HttpResponse('Success')
+             
     return HttpResponse('Fail')  
     
 
@@ -383,12 +374,29 @@ def delete_prebooking(name):
 #         except:
 #             pass
     
-def prebooking_update(date):
-    reservations = Customer.objects.all().filter(check_in__exact=date).values('car_parking').annotate(prebooking_count=Count('car_parking'))
-    for reservation in reservations:
-        Parking.objects.filter(id=int(reservation['car_parking'])).update(preBooking=int(reservation['prebooking_count']))
-
+# def prebooking_update(date):
+#     reservations = Customer.objects.all().filter(check_in__exact=date).values('car_parking').annotate(prebooking_count=Count('car_parking'))
+#     
 
     
 
- 
+# def prebooking_update(request,date):
+#     reservations = Customer.objects.all().filter(check_in__exact=date).values('car_parking').annotate(prebooking_count=Count('car_parking'))
+#     parking_spots = Parking.objects.all()
+#     for parking in parking_spots:
+#         parking.preBooking = 0
+#         parking.save()
+
+#     for reservation in reservations:
+#         Parking.objects.filter(id=int(reservation['car_parking'])).update(preBooking=int(reservation['prebooking_count']))
+#     return render(request,'admin_templates/parking.html')
+    
+def pre_update():
+    reservations = Customer.objects.filter(check_in='2022-11-02').values('car_parking').annotate(prebooking_count=Count('car_parking'))
+    reservations = reservations.values_list('car_parking','prebooking_count')
+    for i in range(0,len(reservations)):
+        Parking.objects.filter(pk=reservations[i][0]).update(preBooking=reservations[i][1])
+    
+
+        
+    

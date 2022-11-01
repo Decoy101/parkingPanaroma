@@ -74,11 +74,16 @@ class Customer(models.Model):
     car_plates = models.CharField(max_length=10,blank=True)
     car_color = models.CharField(max_length=10,blank=True)
     car_parking = models.ForeignKey(Parking,on_delete=models.CASCADE)
-    vehicle_type = models.CharField(max_length=100,blank=True)
+    vehicle_choices = (
+        ('CAR',"CAR"),
+        ('BIKE','BIKE')
+    )
+    vehicle_type = models.CharField(max_length=100,choices=vehicle_choices,blank=True)
     _choices = (
         ('Yes',"Yes"),
         ('No',"No")
     )
+    
     parking_booking = models.CharField(max_length=3,choices=_choices,blank=True)
     is_checked_in = models.BooleanField(default=False)
     is_checked_out = models.BooleanField(default=False)
