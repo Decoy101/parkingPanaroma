@@ -293,10 +293,14 @@ def ReservationListView(request):
 
 def ParkingListView(request):
     parking_options = Parking.objects.all()
+    if request.method == 'POST':
+        date = request.POST['date']
+    else:
+        date = datetime.datetime.today().strftime("%Y-%m-%d")
     context = {
         'parking_options': parking_options,
     }
-    pre_update()
+    pre_update(date)
     return render(request,'admin_templates/parking.html',context)
 
 
@@ -391,8 +395,8 @@ def delete_prebooking(name):
 #         Parking.objects.filter(id=int(reservation['car_parking'])).update(preBooking=int(reservation['prebooking_count']))
 #     return render(request,'admin_templates/parking.html')
     
-def pre_update():
-    reservations = Customer.objects.filter(check_in='2022-11-02').values('car_parking').annotate(prebooking_count=Count('car_parking'))
+def pre_update(date):
+    reservations = Customer.objects.filter(check_in=date).values('car_parking').annotate(prebooking_count=Count('car_parking'))
     reservations = reservations.values_list('car_parking','prebooking_count')
     for i in range(0,len(reservations)):
         Parking.objects.filter(pk=reservations[i][0]).update(preBooking=reservations[i][1])
