@@ -189,7 +189,6 @@ def edit_entry_save(request):
     
         
 
-
 def delete_entry(request,entry_id):
     entry = Customer.objects.get(id=entry_id)
     try:
@@ -399,10 +398,10 @@ def delete_prebooking(name):
 #     return render(request,'admin_templates/parking.html')
     
 def pre_update(date):
-    reservations = Customer.objects.filter(check_in=date).values('car_parking').annotate(prebooking_count=Count('car_parking'))
-    reservations = reservations.values_list('car_parking','prebooking_count')
-    for i in range(0,len(reservations)):
-        Parking.objects.filter(pk=reservations[i][0]).update(preBooking=reservations[i][1])
+    reservationss = Customer.objects.filter(check_in=date).values('car_parking').annotate(prebooking_count=Count('car_parking'))
+    reservationss = reservationss.values_list('car_parking','prebooking_count')
+    for i in range(0,len(reservationss)):
+        Parking.objects.filter(pk=reservationss[i][0]).update(preBooking=reservationss[i][1])
     
 
         
