@@ -43,11 +43,6 @@
         </div>
         {% endif %}    
         {% endfor %%}
-        </div>
-
-        <!-- Check-In Check-out -->
-
-       <div style=" width: 100%; display: flex; justify-content: start;">
         {% for field in form %}
         {% if forloop.counter > 2 and forloop.counter <= 4 %}
         <div class="form-group d-flex mr-5" >
@@ -57,11 +52,26 @@
         </div>
         {% endif %}    
         {% endfor %%}
+        </div>
+
+        <!-- Check-In Check-out -->
+
+       <div style=" width: 100%; display: flex; justify-content: start;">
+       
        </div>
 
        <div style=" width: 100%; display: flex; justify-content: start;">
         {% for field in form %}
         {% if forloop.counter > 4 and forloop.counter <= 6 %}
+        <div class="form-group d-flex mr-5" >
+            {{ field.errors }}
+            <label class="mx-2">{{ field.label_tag }}</label>
+            <div>{{ field }}</div>
+        </div>
+        {% endif %}    
+        {% endfor %%}
+        {% for field in form %}
+        {% if forloop.counter > 10 and forloop.counter <= 13 %}
         <div class="form-group d-flex mr-5" >
             {{ field.errors }}
             <label class="mx-2">{{ field.label_tag }}</label>
@@ -84,15 +94,7 @@
        </div>
 
        <div style=" width: 100%; display: flex; justify-content: start;">
-        {% for field in form %}
-        {% if forloop.counter > 10 and forloop.counter <= 13 %}
-        <div class="form-group d-flex mr-5" >
-            {{ field.errors }}
-            <label class="mx-2">{{ field.label_tag }}</label>
-            <div>{{ field }}</div>
-        </div>
-        {% endif %}    
-        {% endfor %%}
+        
        </div>
     </div>
     <!-- /.card-body -->

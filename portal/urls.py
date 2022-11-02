@@ -1,9 +1,10 @@
 
 from django.urls import include, path
 
-from . import AdminViews, views
+from . import AdminViews, views, StaffViews
 
 urlpatterns = [
+    # Admin URls
     path('',views.loginPage, name='login'),
     path('doLogin',views.doLogin,name="doLogin"),
     path('logout_user/',views.logout_user,name='logout_user'),
@@ -29,5 +30,21 @@ urlpatterns = [
     path('customer_details/<int:reservation_id>',AdminViews.customer_view,name='customer_details'),    
     path('update_parking',AdminViews.update_parking,name='update_parking'),
     path('update_status',AdminViews.update_status, name='update_status'),
+
+    # Staff URls
+    # path('',views.loginPage, name='login'),
+    # path('doLogin',views.doLogin,name="doLogin"),
+    # path('logout_user/',views.logout_user,name='logout_user'),
+    # path('staffHomePage',StaffViews.Admin_HomePage,name="staff_home"),
+    # path('new_entry',AdminViews.new_entry,name='staff_new_entry'),
+    # path('new_entry_save',AdminViews.new_entry_save,name='new_entry_save'),
+    # path('edit_entry/<entry_id>',AdminViews.edit_entry,name='staff_edit_entry'),
+    # path('edit_entry_save/',AdminViews.edit_entry_save,name='edit_entry_save'),
+    # path('delete_entry/<entry_id>',AdminViews.delete_entry,name='delete_entry'),
+    # path('dashboard',AdminViews.ReservationsListView.as_view(), name='staff_dashboard'),
+    # path('parking_staff',StaffViews.ParkingListView,name='staff_parking'),
+    # path('customer_details/<int:reservation_id>',AdminViews.customer_view,name='customer_details'),    
+    # path('update_parking',AdminViews.update_parking,name='update_parking'),
+    # path('update_status',AdminViews.update_status, name='update_status'),
     
 ]

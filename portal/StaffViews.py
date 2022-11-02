@@ -17,10 +17,10 @@ utc=pytz.UTC
 
 
 def Admin_HomePage(request):
-    return render(request,'admin_templates/home.html')
+    return render(request,'staff_templates/home.html')
 
 def add_staff(request):
-    return render(request, 'admin_templates/add_staff.html')
+    return render(request, 'staff_templates/add_staff.html')
 
 def add_staff_save(request):
     if request.method != 'POST':
@@ -51,7 +51,7 @@ def manage_staff(request):
         "staffs" : staffs,
 
     }
-    return render(request,'admin_templates/manage_staff.html',context)
+    return render(request,'staff_templates/manage_staff.html',context)
 
 def edit_staff(request,staff_id):
     staff = Staffs.objects.get(admin=staff_id)
@@ -60,7 +60,7 @@ def edit_staff(request,staff_id):
         "staff":staff,
         "id": staff_id
     }
-    return render(request,'admin_templates/edit_staff.html',context)
+    return render(request,'staff_templates/edit_staff.html',context)
 
 def edit_staff_save(request):
     if request.method != "POST":
@@ -108,7 +108,7 @@ def delete_staff(request,staff_id):
 
 def new_entry(request): 
     form = EntryForm
-    return render(request,'admin_templates/new_entry.html',{'form':form})
+    return render(request,'staff_templates/new_entry.html',{'form':form})
 
 def new_entry_save(request):
     if request.method != 'POST':
@@ -147,7 +147,7 @@ def edit_entry(request,entry_id):
         'entry':entry,
         'parking_options': parking_options
     }
-    return render(request,'admin_templates/edit_entry.html',context)
+    return render(request,'staff_templates/edit_entry.html',context)
 
 
 def edit_entry_save(request):
@@ -190,92 +190,10 @@ def edit_entry_save(request):
         
 
 
-def delete_entry(request,entry_id):
-    entry = Customer.objects.get(id=entry_id)
-    try:
-        if entry.parking_booking == 'YES':
-            delete_prebooking(entry.car_parking)
-
-        entry.delete()
-
-        messages.success(request,"Entry Deleted Successfully")
-        return redirect('dashboard')
-    except:
-        messages.error(request,'Parking to delete staff')
-        return redirect('dashboard')
-
-def add_parking(request):
-    return render(request,'admin_templates/add_parking_info.html')
-
-def add_parking_save(request):
-    if request.method != 'POST':
-        messages.error(request,"Invalid Request")
-        return redirect('add_parking')
-    else:
-        parking_name = request.POST.get('parking_name')
-        total_spaces = request.POST.get('parking_available')
-        max_car_spaces = request.POST.get('max_car_spaces')
-        max_bike_spaces = request.POST.get('max_bike_spaces')
-
-        try:
-            parking = Parking.objects.create(name=parking_name,total=total_spaces,max_car = max_car_spaces,max_bike = max_bike_spaces)
-            Parking.save(parking)
-            messages.success(request,'Parking Space Added')
-            return redirect('parking')
-        except:
-            messages.error(request,'Failed to add new entry')
-            return redirect('parking')
-
-def edit_parking(request,parking_id):
-    parking = Parking.objects.get(id=parking_id)
-    context = {
-        'parking':parking,
-        'id':parking_id
-    }
-    return render(request,'admin_templates/edit_parking.html',context)
-    
-       
-    
-def edit_parking_save(request):
-    if request.method != 'POST':
-        messages.error(request,'Invalid Request')
-    else:
-        parking_id = request.POST.get('parking_id')
-        name = request.POST.get('name')
-        total = request.POST.get('total_spaces')
-        max_car = request.POST.get('max_car')
-        max_bike = request.POST.get('max_bike')
-        car_spots_reserved = request.POST.get('car_spots_reserved')
-        bike_spots_reserved = request.POST.get('bike_spots_reserved')
-        parking = Parking.objects.get(id=parking_id)
-        parking.name = name
-        parking.total = total
-        parking.max_car = max_car
-        parking.max_bike = max_bike
-        parking.car_spots_reserved = car_spots_reserved
-        parking.bike_spots_reserved = bike_spots_reserved
-        parking.save()
-        parking.available = int(parking.total) - (int(parking.car_spots_reserved)+ int(parking.bike_spots_reserved))
-        parking.save()
-
-        messages.success(request,'Parking Updated Successfully')
-        return redirect('parking')
-        
-
-
-def delete_parking(request,parking_id):
-    parking = Parking.objects.get(id=parking_id)
-    try:
-        parking.delete()
-        messages.success(request,"Parking Deleted Successfully")
-        return redirect('parking')
-    except:
-        messages.error(request,'Parking to delete staff')
-        return redirect('parking') 
 
 class ReservationsListView(ListView):
     model = Customer
-    template_name = 'admin_templates/dashboard.html'
+    template_name = 'staff_templates/dashboard.html'
     context_object_name = 'reservations'
 
 
@@ -288,7 +206,7 @@ def ReservationListView(request):
         "parking_options": parking_options
     }
 
-    return render(request,'admin_templates/dashboard.html',context)
+    return render(request,'staff_templates/dashboard.html',context)
 
 
 def ParkingListView(request):
@@ -304,14 +222,14 @@ def ParkingListView(request):
         pre_update(date)
     except:
         pass
-    return render(request,'admin_templates/parking.html',context)
+    return render(request,'staff_templates/parking.html',context)
 
 
 
 
 def customer_view(request,reservation_id):
     customer = get_object_or_404(Customer,id = reservation_id)
-    return render(request,'admin_templates/customer_details.html',locals())
+    return render(request,'staff_templates/customer_details.html',locals())
 
 # the sequeces of the Parking Objects are yet to fixed
 def update_parking(request):
@@ -396,7 +314,7 @@ def delete_prebooking(name):
 
 #     for reservation in reservations:
 #         Parking.objects.filter(id=int(reservation['car_parking'])).update(preBooking=int(reservation['prebooking_count']))
-#     return render(request,'admin_templates/parking.html')
+#     return render(request,'staff_templates/parking.html')
     
 def pre_update(date):
     reservations = Customer.objects.filter(check_in=date).values('car_parking').annotate(prebooking_count=Count('car_parking'))

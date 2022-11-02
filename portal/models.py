@@ -8,6 +8,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import django.dispatch
 
 
 class CustomUser(AbstractUser):
@@ -88,3 +89,8 @@ class Customer(models.Model):
     is_checked_in = models.BooleanField(default=False)
     is_checked_out = models.BooleanField(default=False)
     objects = models.Manager()
+
+@django.dispatch.receiver(models.signals.post_init,sender=Parking)
+def set_default(sender,instance,*args,**kwargs):
+    if not instance.available:
+        instance.available = instance.total
