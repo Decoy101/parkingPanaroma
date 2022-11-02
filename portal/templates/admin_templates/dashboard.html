@@ -11,12 +11,8 @@ Dashboard {% endblock title%} {% block main_content %}
     
     <div class="col-12 mb-3">
     <div class="col-12 mb-3">
-      {% if reservations %}
-          {% include 'admin_templates/reservation_table.html' %}
-          {% include 'admin_templates/_modal.html' %}
-      {% else %}
-        <p class="no-books text-primary">No Reservations.</p>
-      {% endif %}
+      {% include 'admin_templates/reservation_table.html' %}
+      {% include 'admin_templates/_modal.html' %}
       
     </div>
     
