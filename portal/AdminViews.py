@@ -272,12 +272,6 @@ def delete_parking(request,parking_id):
         messages.error(request,'Parking to delete staff')
         return redirect('parking') 
 
-class ReservationsListView(ListView):
-    model = Customer
-    template_name = 'admin_templates/dashboard.html'
-    context_object_name = 'reservations'
-
-
 def ReservationListView(request):
     reservations = Customer.objects.all()
     parking_options = Parking.objects.all()
