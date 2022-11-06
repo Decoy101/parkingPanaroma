@@ -35,9 +35,12 @@ def doLogin(request):
             #return HttpResponseRedirect("/")
             return redirect('login')
 
-
+# there's some issue logout being in views, its working perfectly fine being in AdminViews
 def logout_user(request):
-    logout(request)
-    return HttpResponseRedirect('/')
-
+    if request.user.is_authenticated:
+        logout(request)
+        return redirect('login')
+    else:
+        return render(request,'admin_templates/home.html')
+     
             

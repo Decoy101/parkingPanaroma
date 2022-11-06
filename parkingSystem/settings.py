@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'portal.LoginCheckMiddleWare.LoginCheckMiddleWare',
     
 ]
 
@@ -152,6 +153,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'portal.CustomUser'
+
+AUTHENTICATION_BACKENDS = ['portal.EmailBackEnd.EmailBackEnd']
+
 DATETIME_FORMAT="%Y/%M/%D"
 
 # Heroku: Update database configuration from $DATABASE_URL.
