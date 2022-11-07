@@ -303,7 +303,10 @@ def ReservationListView(request):
 def ParkingListView(request):
     date = datetime.datetime.today().strftime("%Y-%m-%d")
     parking_options = Parking.objects.annotate(prebooking=Count('parking',filter=Q(parking__check_in=date,parking__is_checked_in=False,parking__parking_booking='Yes')))
+    parking_options = parking_options.annotate(car_spots_reserved=Count('parking',filter=Q(parking__is_checked_in=True,parking__vehicle_type='CAR',parking__is_checked_out=False,parking__parking_booking='Yes')))
+    parking_options = parking_options.annotate(bike_spots_reserved=Count('parking',filter=Q(parking__is_checked_in=True,parking__vehicle_type='BIKE',parking__is_checked_out=False,parking__parking_booking='Yes')))
     parking_options = parking_options.annotate(available=F('total')-F('car_spots_reserved')-F('bike_spots_reserved')-F('prebooking'))
+   
     context = {
         'parking_options': parking_options,
     }
@@ -315,31 +318,7 @@ def customer_view(request,reservation_id):
     return render(request,'admin_templates/customer_details.html',locals())
 
 # the sequeces of the Parking Objects are yet to fixed
-def update_parking(request):
-    if request.method == 'POST':
-        customer_id = request.POST['customer_id'];
-        vehicle_type = request.POST['vehicle_type']
-        status = request.POST['status']
-        customer = Reservation.objects.get(id=int(customer_id))
-        if status=='in':
-            if vehicle_type=='CAR':
-                customer.car_parking.car_spots_reserved+=1
-            elif vehicle_type=='BIKE':
-                customer.car_parking.bike_spots_reserved+=1
-                
-            customer.car_parking.available -=1        
-            customer.car_parking.save()
-        elif status=='out':
-            if vehicle_type=='CAR':
-                customer.car_parking.car_spots_reserved-=1
-            elif vehicle_type=='BIKE':
-                customer.car_parking.bike_spots_reserved-=1
-                
-            customer.car_parking.available +=1        
-            customer.car_parking.save()
-        return HttpResponse('Success')
-             
-    return HttpResponse('Fail')  
+
     
 
         

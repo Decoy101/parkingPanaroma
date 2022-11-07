@@ -28,7 +28,6 @@ urlpatterns = [
     path('dashboard',AdminViews.ReservationListView, name='dashboard'),
     path('parking',AdminViews.ParkingListView,name='parking'),
     path('customer_details/<int:reservation_id>',AdminViews.customer_view,name='customer_details'),    
-    path('update_parking',AdminViews.update_parking,name='update_parking'),
     path('update_status',AdminViews.update_status, name='update_status'),
 
     # Staff URls

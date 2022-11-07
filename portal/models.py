@@ -54,8 +54,6 @@ class Parking(models.Model):
     total = models.IntegerField(default = 0)
     max_car = models.IntegerField(default = 0)
     max_bike = models.IntegerField(default = 0)
-    car_spots_reserved = models.IntegerField(default = 0)
-    bike_spots_reserved = models.IntegerField(default = 0)
     objects = models.Manager()
     def __str__(self):
         return self.name
