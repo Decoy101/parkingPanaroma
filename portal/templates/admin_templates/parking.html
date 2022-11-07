@@ -25,7 +25,9 @@ Dashboard {% endblock title%} {% block main_content %}
         <th scope="col" class="align-middle">Bike Spots Reserved</th>
         <th scope="col" class="align-middle">Pre-Booking</th>
         
+        {% if perms.app_label.is_superuser %}
         <th scope="col" class="align-middle">Actions</th>
+        {% endif %}
       </thead>
       <tbody>
         {% for parking in parking_options %}
@@ -39,14 +41,18 @@ Dashboard {% endblock title%} {% block main_content %}
           <td class="align-middle">{{parking.bike_spots_reserved}}</td>      
           <td class="align-middle">{{parking.prebooking}}</td>
           
+          {% if perms.app_label.is_superuser %}
           <td class="align-middle"> <a href="{% url 'edit_parking' parking.id %}" class="btn btn-success">Edit</a> <a href="{% url 'delete_parking' parking.id %}" class="btn btn-danger">Delete</a></td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
   
+    {% if perms.app_label.is_superuser %}
     <a href="{% url 'add_parking' %}"><div class="btn btn-primary">Add Parking</div></a>
+    {% endif %}
 
   </div>
 </section>

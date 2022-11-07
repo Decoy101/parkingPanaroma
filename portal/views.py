@@ -25,7 +25,7 @@ def doLogin(request):
                 
             elif user_type == '2':
                 # return HttpResponse("Staff Login")
-                return redirect('staff_home')
+                return redirect('admin_home')
                 
             else:
                 messages.error(request, "Invalid Login!")
