@@ -1,5 +1,6 @@
 {% extends 'admin_templates/base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 {% block title %} New Entry {% endblock title%}
 {% block main_content %}
 <section class="content">
@@ -15,7 +16,100 @@
                 <!-- /.card-header -->
                 <!-- form start -->
                 {% url 'new_entry_save' as action_path  %}
-                {% include 'admin_templates/form_template.html' with messages=messages form=form action_path=action_path button_text="Add New Reservation" %}
+              <div class="card-body">
+                <form method="POST" action="{{ action_path }}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                            {% comment %} Display Messages {% endcomment %}
+                            {% if messages %}
+                            <div class="form-group">
+                            <div class="col-12">
+                                {% for message in messages %}
+                                {% if message.tags == "error" %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                {% elif message.tags == "success" %}
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            </div>
+                            {% endif %}
+                
+                    <div class="row">
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.first_name.label_tag }}
+                            {% render_field entry_form.first_name class="form-control" %}
+                        </div>
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.last_name.label_tag }}
+                            {% render_field entry_form.last_name class="form-control" %}
+                        </div>
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.phone_no.label_tag }}
+                            {% render_field entry_form.phone_no class="form-control" %}
+                        </div>
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.room_no.label_tag }}
+                            {% render_field entry_form.room_no class="form-control" %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.check_in.label_tag }}
+                            {% render_field entry_form.check_in class="form-control" %}
+                        </div>
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.check_out.label_tag }}
+                            {% render_field entry_form.check_out class="form-control" %}
+                        </div>
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.vehicle_type.label_tag }}
+                            {% render_field entry_form.vehicle_type class="form-control" %}
+                        </div>
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.parking_booking.label_tag }}
+                            {% render_field entry_form.parking_booking class="form-control" %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.car_manufacturer.label_tag }}
+                            {% render_field entry_form.car_manufacturer class="form-control" %}
+                        </div>
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.car_model.label_tag }}
+                            {% render_field entry_form.car_model class="form-control" %}
+                        </div>
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.car_plates.label_tag }}
+                            {% render_field entry_form.car_plates class="form-control" %}
+                        </div>
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.car_color.label_tag }}
+                            {% render_field entry_form.car_color class="form-control" %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-sm-4 col-md-3">
+                            {{ entry_form.car_parking.label_tag }}
+                            {% render_field entry_form.car_parking class="form-control" %}
+                        </div>
+                    
+                    </div>
+                        
+                    <!-- /.card-body -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+              </div>
 
                 <!-- <form role="form" method="POST" action="{% url 'new_entry_save' %}">
                     {% csrf_token %}

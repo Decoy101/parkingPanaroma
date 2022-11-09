@@ -1,7 +1,5 @@
-<form role="form" method="POST" action="{{ action_path }}" enctype="multipart/form-data">
+ <form role="form" method="POST" action="{{ action_path }}" enctype="multipart/form-data">
     {% csrf_token %}
-
-    
             {% comment %} Display Messages {% endcomment %}
             {% if messages %}
             <div class="form-group">
@@ -27,76 +25,14 @@
             </div>
             {% endif %}
 
-    <div class="card-body d-flex flex-wrap">
-        
-        {% comment %} Adding Form with All inputs Here {% endcomment %}
-
-        <!-- Personal Details -->
-
-        <div style=" width: 100%; display: flex; justify-content: start;">
-            {% for field in form %}
-        {% if forloop.counter > 0 and forloop.counter <= 2 %}
-        <div class="form-group d-flex mr-4" >
-            {{ field.errors }}
-            <label class="mx-2">{{ field.label_tag }}</label>
-            <div>{{ field }}</div>
+    <div class="row">
+        <div class="form-group col-sm-4 col-md-3">
+            {{ form.first_name.label_tag }}
+            {% render_field form.first_name class="form-control" %}
         </div>
-        {% endif %}    
-        {% endfor %%}
-        {% for field in form %}
-        {% if forloop.counter > 2 and forloop.counter <= 4 %}
-        <div class="form-group d-flex mr-5" >
-            {{ field.errors }}
-            <label class="mx-2">{{ field.label_tag }}</label>
-            <div>{{ field }}</div>
-        </div>
-        {% endif %}    
-        {% endfor %%}
-        </div>
-
-        <!-- Check-In Check-out -->
-
-       <div style=" width: 100%; display: flex; justify-content: start;">
-       
-       </div>
-
-       <div style=" width: 100%; display: flex; justify-content: start;">
-        {% for field in form %}
-        {% if forloop.counter > 4 and forloop.counter <= 6 %}
-        <div class="form-group d-flex mr-5" >
-            {{ field.errors }}
-            <label class="mx-2">{{ field.label_tag }}</label>
-            <div>{{ field }}</div>
-        </div>
-        {% endif %}    
-        {% endfor %%}
-        {% for field in form %}
-        {% if forloop.counter > 10 and forloop.counter <= 13 %}
-        <div class="form-group d-flex mr-5" >
-            {{ field.errors }}
-            <label class="mx-2">{{ field.label_tag }}</label>
-            <div>{{ field }}</div>
-        </div>
-        {% endif %}    
-        {% endfor %%}
-       </div>
-
-       <div style=" width: 100%; display: flex; justify-content: start">
-        {% for field in form %}
-        {% if forloop.counter > 6 and forloop.counter <= 10 %}
-        <div class="d-flex" >
-            {{ field.errors }}
-            <label class="mx-2">{{ field.label_tag }}</label>
-            <div>{{ field }}</div>
-        </div>
-        {% endif %}    
-        {% endfor %%}
-       </div>
-
-       <div style=" width: 100%; display: flex; justify-content: start;">
-        
-       </div>
     </div>
+        
+        
     <!-- /.card-body -->
 
     <div class="card-footer">

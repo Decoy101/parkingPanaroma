@@ -1,14 +1,56 @@
-
+{% load widget_tweaks %}
 <section class="content">
     <div class="container-fluid">
       <br />
       <div class="row mb-3">
         <h1 class="col-10">Dashboard</h1>
-        
         <button class="col-2" onclick="exportData()">
           <span class="glyphicon glyphicon-download"></span>
           Download list
         </button>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="card card-body">
+            <form action="" method="get">
+              <div class="row">
+                <div class="form-group col-sm-4 col-md-3">
+                  {{ reservation_filter.form.first_name.label_tag }}
+                  {% render_field reservation_filter.form.first_name class="form-control" %}
+                </div>
+                <div class="form-group col-sm-4 col-md-3">
+                  {{ reservation_filter.form.last_name.label_tag }}
+                  {% render_field reservation_filter.form.last_name class="form-control" %}
+                </div>
+                <div class="form-group col-sm-4 col-md-3">
+                  {{ reservation_filter.form.check_in.label_tag }}
+                  {% render_field reservation_filter.form.check_in class="form-control" %}
+                </div>
+                <div class="form-group col-sm-4 col-md-3">
+                  {{ reservation_filter.form.check_out.label_tag }}
+                  {% render_field reservation_filter.form.check_out class="form-control" %}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-sm-4 col-md-3">
+                  {{ reservation_filter.form.car_parking.label_tag }}
+                  {% render_field reservation_filter.form.car_parking class="form-control" %}
+                </div>
+                <div class="form-group col-sm-4 col-md-3">
+                  {{ reservation_filter.form.is_checked_in.label_tag }}
+                  {% render_field reservation_filter.form.is_checked_in class="form-control" %}
+                </div>
+                <div class="form-group col-sm-4 col-md-3">
+                  {{ reservation_filter.form.is_checked_out.label_tag }}
+                  {% render_field reservation_filter.form.is_checked_out class="form-control" %}
+                </div>
+
+              </div>
+              <button class="btn btn-sm btn-danger" type="submit">Filter</button>
+            </form>
+          </div>
+        </div>
+       
       </div>
       <table class="table table-bordered" id="customer-data">
         <thead>
@@ -28,7 +70,8 @@
           <th scope="col" class="align-middle col-4">Actions</th>
         </thead>
         <tbody>
-          {% for reservation in reservations %}
+          {% if reservation_filter.qs %}
+          {% for reservation in reservation_filter.qs %}
           <tr>
             <td>{{forloop.counter}}</td>
             <td>{{reservation.first_name}} {{reservation.last_name}}</td>
@@ -53,10 +96,8 @@
               <a href="{% url 'delete_entry' reservation.id %}" class="btn btn-danger">Delete</a>
             </td>
           </tr>
-          
-        
-          
           {% endfor %}
+          {% endif %}
         </tbody>
       </table>
     </div>
