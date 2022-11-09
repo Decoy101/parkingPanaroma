@@ -51,8 +51,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap_modal_forms',
     'widget_tweaks',
+    'django_filters',
+    'crispy_forms',
     'portal'
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

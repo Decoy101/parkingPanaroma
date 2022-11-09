@@ -14,6 +14,8 @@ import datetime
 import pytz
 
 
+from .filters import ReservationsFilter
+
 utc=pytz.UTC
 
 
@@ -119,8 +121,11 @@ def delete_staff(request,staff_id):
         return redirect('manage_staff')
 
 def new_entry(request): 
-    form = EntryForm
-    return render(request,'admin_templates/new_entry.html',{'form':form})
+    entry_form = EntryForm
+    context = {
+        'entry_form':entry_form
+    }
+    return render(request,'admin_templates/new_entry.html',context)
 
 def new_entry_save(request):
     if request.method != 'POST':
@@ -290,18 +295,20 @@ def delete_parking(request,parking_id):
 
 def ReservationListView(request):
     reservations = Reservation.objects.all()
-    parking_options = Parking.objects.all()
 
+    reservation_filter = ReservationsFilter(request.GET,queryset = reservations)
     context = {
         "reservations": reservations,
-        "parking_options": parking_options
+        "reservation_filter":reservation_filter
     }
 
     return render(request,'admin_templates/dashboard.html',context)
 
-
 def ParkingListView(request):
     date = datetime.datetime.today().strftime("%Y-%m-%d")
+    if request.method == 'GET':
+        date = request.GET.get('filterdate')
+
     parking_options = Parking.objects.annotate(prebooking=Count('parking',filter=Q(parking__check_in=date,parking__is_checked_in=False,parking__parking_booking='Yes')))
     parking_options = parking_options.annotate(car_spots_reserved=Count('parking',filter=Q(parking__is_checked_in=True,parking__vehicle_type='CAR',parking__is_checked_out=False,parking__parking_booking='Yes')))
     parking_options = parking_options.annotate(bike_spots_reserved=Count('parking',filter=Q(parking__is_checked_in=True,parking__vehicle_type='BIKE',parking__is_checked_out=False,parking__parking_booking='Yes')))
@@ -309,6 +316,7 @@ def ParkingListView(request):
    
     context = {
         'parking_options': parking_options,
+        'filterdate':date
     }
     return render(request,'admin_templates/parking.html',context)
 
