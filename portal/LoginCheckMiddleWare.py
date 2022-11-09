@@ -13,18 +13,18 @@ class LoginCheckMiddleWare(MiddlewareMixin):
         #Check whether the user is logged in or not
         if user.is_authenticated:
             if user.user_type == "1":
-                if modulename == "mainApp.AdminViews":
+                if modulename == "portal.AdminViews":
                     pass
                 else:
                     return redirect("admin_home")
             
             elif user.user_type == "2":
-                if modulename == "mainApp.StaffViews":
+                if modulename == "portal.AdminViews":
                     pass
-                elif modulename == "mainApp.views" or modulename == "django.views.static":
+                elif modulename == "portal.views" or modulename == "django.views.static":
                     pass
                 else:
-                    return redirect("staff_home")
+                    return redirect("admin_home")
 
             else:
                 return redirect("login")

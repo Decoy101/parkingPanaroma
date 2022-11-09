@@ -25,6 +25,7 @@
               </a>
             </li>
 
+            {% if perms.app_label.is_superuser %}
             <li class="nav-item">
               {% url 'add_staff' as add_staff %}
               <a href="{{ add_staff }}" class="nav-link {% if request.path == add_staff %} active {% endif %}">
@@ -40,6 +41,7 @@
               </a>
               
             </li>
+            {% endif %}
   
             <li class="nav-item">
               {% url 'new_entry' as new_entry %}

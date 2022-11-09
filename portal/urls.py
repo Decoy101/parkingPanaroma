@@ -1,13 +1,13 @@
 
 from django.urls import include, path
 
-from . import AdminViews, views, StaffViews
+from . import AdminViews, views
 
 urlpatterns = [
     # Admin URls
     path('',views.loginPage, name='login'),
     path('doLogin',views.doLogin,name="doLogin"),
-    path('logout_user/',views.logout_user,name='logout_user'),
+    path('logout_user/',AdminViews.logout_user,name='logout_user'),
     path('adminHomePage',AdminViews.Admin_HomePage,name="admin_home"),
     path('add_staff',AdminViews.add_staff,name="add_staff"),
     path('add_staff_save',AdminViews.add_staff_save,name="add_staff_save"),
@@ -25,10 +25,9 @@ urlpatterns = [
     path('edit_parking/<parking_id>/',AdminViews.edit_parking,name='edit_parking'),
     path('edit_parking_save',AdminViews.edit_parking_save,name='edit_parking_save'),
     path('delete_parking/<parking_id>',AdminViews.delete_parking,name='delete_parking'),
-    path('dashboard',AdminViews.ReservationsListView.as_view(), name='dashboard'),
+    path('dashboard',AdminViews.ReservationListView, name='dashboard'),
     path('parking',AdminViews.ParkingListView,name='parking'),
     path('customer_details/<int:reservation_id>',AdminViews.customer_view,name='customer_details'),    
-    path('update_parking',AdminViews.update_parking,name='update_parking'),
     path('update_status',AdminViews.update_status, name='update_status'),
 
     # Staff URls

@@ -3,11 +3,12 @@ from sqlite3 import Timestamp
 from django.contrib import messages
 from django.shortcuts import HttpResponse, get_object_or_404, redirect, render
 from django.views.generic import ListView
-from django.db.models import Subquery, F
+from django.db.models import Subquery, F,Sum, Q
 from django.db.models import Count
 from portal.forms import EntryForm
+from django.contrib.auth import logout
 
-from .models import Customer, CustomUser, Parking, Staffs
+from .models import Reservation, CustomUser, Parking, Staffs,Connection
 import time
 import datetime
 import pytz
@@ -17,7 +18,18 @@ utc=pytz.UTC
 
 
 def Admin_HomePage(request):
-    return render(request,'admin_templates/home.html')
+    if not request.user.is_authenticated:
+        logout(request)
+        return redirect('login')
+    else:
+        return render(request,'admin_templates/home.html')
+    
+def logout_user(request):
+    if request.user.is_authenticated:
+        logout(request)
+        return redirect('login')
+    else:
+        return render(request,'admin_templates/home.html')
 
 def add_staff(request):
     return render(request, 'admin_templates/add_staff.html')
@@ -132,8 +144,12 @@ def new_entry_save(request):
             parking_booking = form.cleaned_data['parking_booking']
         
         try:
-            customer = Customer.objects.create(first_name = first_name,last_name = last_name,phone_no = phone_no, room_no = room_no,check_in = check_in,check_out = check_out,car_manufacturer = car_manufacturer,car_model=car_model,car_color = car_color,car_plates=car_plates,car_parking = car_parking,vehicle_type = vehicle_type,parking_booking = parking_booking)
-            Customer.save(customer)
+            customer = Reservation.objects.create(first_name = first_name,last_name = last_name,phone_no = phone_no, room_no = room_no,check_in = check_in,check_out = check_out,car_manufacturer = car_manufacturer,car_model=car_model,car_color = car_color,car_plates=car_plates,car_parking = car_parking,vehicle_type = vehicle_type,parking_booking = parking_booking)
+            Reservation.save(customer)
+            reservation_id = Reservation.objects.latest('id').id
+            parking_id = Reservation.objects.get(id=reservation_id).car_parking.id
+            connection = Connection.objects.create(parking_id= Parking.objects.get(id=parking_id),reservation_id=Reservation.objects.get(id=reservation_id))
+            Connection.save(connection)
             messages.success(request,"Entry Added")
             return redirect('new_entry')
         except:
@@ -141,8 +157,8 @@ def new_entry_save(request):
             return redirect('new_entry')
         
 def edit_entry(request,entry_id):
-    entry = Customer.objects.get(id = entry_id)
-    parking_options = Customer.objects.all()
+    entry = Reservation.objects.get(id = entry_id)
+    parking_options = Reservation.objects.all()
     context = {
         'entry':entry,
         'parking_options': parking_options
@@ -166,7 +182,7 @@ def edit_entry_save(request):
     vehicle_type = request.POST.get('vehicle_type')
     parking_booking = request.POST.get('parking_booking')
     
-    entry = Customer.objects.get(id=entry_id)
+    entry = Reservation.objects.get(id=entry_id)
     entry.first_name = first_name
     entry.last_name = last_name
     entry.phone_no = phone_no
@@ -190,7 +206,7 @@ def edit_entry_save(request):
         
 
 def delete_entry(request,entry_id):
-    entry = Customer.objects.get(id=entry_id)
+    entry = Reservation.objects.get(id=entry_id)
     try:
         if entry.parking_booking == 'YES':
             delete_prebooking(entry.car_parking)
@@ -220,10 +236,10 @@ def add_parking_save(request):
             parking = Parking.objects.create(name=parking_name,total=total_spaces,max_car = max_car_spaces,max_bike = max_bike_spaces)
             Parking.save(parking)
             messages.success(request,'Parking Space Added')
-            return redirect('parking')
+            return redirect('add_parking')
         except:
             messages.error(request,'Failed to add new entry')
-            return redirect('parking')
+            return redirect('add_parking')
 
 def edit_parking(request,parking_id):
     parking = Parking.objects.get(id=parking_id)
@@ -272,14 +288,8 @@ def delete_parking(request,parking_id):
         messages.error(request,'Parking to delete staff')
         return redirect('parking') 
 
-class ReservationsListView(ListView):
-    model = Customer
-    template_name = 'admin_templates/dashboard.html'
-    context_object_name = 'reservations'
-
-
 def ReservationListView(request):
-    reservations = Customer.objects.all()
+    reservations = Reservation.objects.all()
     parking_options = Parking.objects.all()
 
     context = {
@@ -291,53 +301,24 @@ def ReservationListView(request):
 
 
 def ParkingListView(request):
-    parking_options = Parking.objects.all()
-    if request.method == 'POST':
-        date = request.POST['date']
-    else:
-        date = datetime.datetime.today().strftime("%Y-%m-%d")
+    date = datetime.datetime.today().strftime("%Y-%m-%d")
+    parking_options = Parking.objects.annotate(prebooking=Count('parking',filter=Q(parking__check_in=date,parking__is_checked_in=False,parking__parking_booking='Yes')))
+    parking_options = parking_options.annotate(car_spots_reserved=Count('parking',filter=Q(parking__is_checked_in=True,parking__vehicle_type='CAR',parking__is_checked_out=False,parking__parking_booking='Yes')))
+    parking_options = parking_options.annotate(bike_spots_reserved=Count('parking',filter=Q(parking__is_checked_in=True,parking__vehicle_type='BIKE',parking__is_checked_out=False,parking__parking_booking='Yes')))
+    parking_options = parking_options.annotate(available=F('total')-F('car_spots_reserved')-F('bike_spots_reserved')-F('prebooking'))
+   
     context = {
         'parking_options': parking_options,
     }
-    try:
-        pre_update(date)
-    except:
-        pass
     return render(request,'admin_templates/parking.html',context)
 
 
-
-
 def customer_view(request,reservation_id):
-    customer = get_object_or_404(Customer,id = reservation_id)
+    customer = get_object_or_404(Reservation,id = reservation_id)
     return render(request,'admin_templates/customer_details.html',locals())
 
 # the sequeces of the Parking Objects are yet to fixed
-def update_parking(request):
-    if request.method == 'POST':
-        customer_id = request.POST['customer_id'];
-        vehicle_type = request.POST['vehicle_type']
-        status = request.POST['status']
-        customer = Customer.objects.get(id=int(customer_id))
-        if status=='in':
-            if vehicle_type=='CAR':
-                customer.car_parking.car_spots_reserved+=1
-            elif vehicle_type=='BIKE':
-                customer.car_parking.bike_spots_reserved+=1
-                
-            customer.car_parking.available -=1        
-            customer.car_parking.save()
-        elif status=='out':
-            if vehicle_type=='CAR':
-                customer.car_parking.car_spots_reserved-=1
-            elif vehicle_type=='BIKE':
-                customer.car_parking.bike_spots_reserved-=1
-                
-            customer.car_parking.available +=1        
-            customer.car_parking.save()
-        return HttpResponse('Success')
-             
-    return HttpResponse('Fail')  
+
     
 
         
@@ -347,9 +328,9 @@ def update_status(request):
         customer_id = request.POST['customer_id']
         status = request.POST['status']
         if status=='in':
-            Customer.objects.filter(pk=customer_id).update(is_checked_in = 1)
+            Reservation.objects.filter(pk=customer_id).update(is_checked_in = 1)
         else:
-            Customer.objects.filter(pk=customer_id).update(is_checked_out = 1)
+            Reservation.objects.filter(pk=customer_id).update(is_checked_out = 1)
 
         return HttpResponse('Success')
     return HttpResponse("Failure")
@@ -397,11 +378,7 @@ def delete_prebooking(name):
 #         Parking.objects.filter(id=int(reservation['car_parking'])).update(preBooking=int(reservation['prebooking_count']))
 #     return render(request,'admin_templates/parking.html')
     
-def pre_update(date):
-    reservationss = Customer.objects.filter(check_in=date).values('car_parking').annotate(prebooking_count=Count('car_parking'))
-    reservationss = reservationss.values_list('car_parking','prebooking_count')
-    for i in range(0,len(reservationss)):
-        Parking.objects.filter(pk=reservationss[i][0]).update(preBooking=reservationss[i][1])
+
     
 
         

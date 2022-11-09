@@ -60,14 +60,12 @@
 
     $('#check-in-button').click(()=>{
         $('#check-in-button').prop("disabled",true);
-        updateParkingTable("{{customer.id}}","{{customer.vehicle_type}}","in");
         updateStatus("{{customer.id}}","in");  
     })
 
     $('#check-out-button').click(()=>{
 
         $('#check-out-button').prop("disabled",true);
-        updateParkingTable("{{customer.car_parking}}","{{customer.vehicle_type}}","out");
         updateStatus("{{customer.id}}","out")
     })
 

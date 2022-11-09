@@ -12,7 +12,7 @@ import django.dispatch
 
 
 class CustomUser(AbstractUser):
-    user_data_type = ((1,'ADMIN'),(2,'STAFF'),(3,'CUSTOMER'))
+    user_data_type = ((1,'ADMIN'),(2,'STAFF'),(3,'Reservation'))
     user_type = models.CharField(default=1,max_length=10,choices = user_data_type)
 
 class Admin(models.Model):
@@ -54,16 +54,11 @@ class Parking(models.Model):
     total = models.IntegerField(default = 0)
     max_car = models.IntegerField(default = 0)
     max_bike = models.IntegerField(default = 0)
-    car_spots_reserved = models.IntegerField(default = 0)
-    bike_spots_reserved = models.IntegerField(default = 0)
-    available = models.IntegerField(default = 0)
-    preBooking = models.IntegerField(default = 0)
     objects = models.Manager()
-
     def __str__(self):
         return self.name
     
-class Customer(models.Model):
+class Reservation(models.Model):
     first_name = models.CharField(max_length=100,blank=True)
     last_name = models.CharField(max_length=100,blank=True)
     room_no = models.CharField(max_length=12,blank=True)
@@ -74,7 +69,7 @@ class Customer(models.Model):
     car_model = models.CharField(max_length=100,blank=True)
     car_plates = models.CharField(max_length=10,blank=True)
     car_color = models.CharField(max_length=10,blank=True)
-    car_parking = models.ForeignKey(Parking,on_delete=models.CASCADE)
+    car_parking = models.ForeignKey(Parking,on_delete=models.CASCADE,related_name="parking")
     vehicle_choices = (
         ('CAR',"CAR"),
         ('BIKE','BIKE')
@@ -90,7 +85,8 @@ class Customer(models.Model):
     is_checked_out = models.BooleanField(default=False)
     objects = models.Manager()
 
-@django.dispatch.receiver(models.signals.post_init,sender=Parking)
-def set_default(sender,instance,*args,**kwargs):
-    if not instance.available:
-        instance.available = instance.total
+
+class Connection(models.Model):
+    parking_id = models.ForeignKey(Parking,on_delete=models.CASCADE)
+    reservation_id = models.ForeignKey(Reservation,on_delete=models.CASCADE)
+    objects = models.Manager()

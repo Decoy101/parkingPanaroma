@@ -2,7 +2,6 @@
 Dashboard {% endblock title%} {% block main_content %}
 
 <script>
-  var UpdateParkingURL = "{% url 'update_parking' %}"
   var UpdateStatus = "{% url 'update_status' %}"
 </script>
 
@@ -23,11 +22,6 @@ Dashboard {% endblock title%} {% block main_content %}
 
 <script>
   // Update Parking 
-
-  function updateParkingTable(customer_id,vehicle_type,status){
-    var data = {'customer_id':customer_id,'vehicle_type':vehicle_type,'status':status,'csrfmiddlewaretoken':'{{csrf_token}}'};
-    $.post(UpdateParkingURL,data);
-  }
   // Right Now, we are just putting the data in the table.
   // Now the problem, we are facing is to fetch the data from the parking table---update it----and then put it back.
 
