@@ -51,7 +51,9 @@
           <button id="check-out-button" class="btn btn-danger">Check Out</button>
           {% endif %}
 
-          <a href="{% url 'test-view' customer.id %}" class="btn btn-success"> Generate stamp</a>
+          {% if not customer.is_checked_out %}
+          <a href="{% url 'gen_stamp' customer.id %}" class="btn btn-success">Generate stamp</a>
+          {% endif%}
           </div>
           
           
