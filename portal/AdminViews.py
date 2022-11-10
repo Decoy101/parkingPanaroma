@@ -1,4 +1,5 @@
 import datetime
+from io import BytesIO
 from sqlite3 import Timestamp
 from django.contrib import messages
 from django.shortcuts import HttpResponse, get_object_or_404, redirect, render
@@ -13,6 +14,8 @@ import time
 import datetime
 import pytz
 
+from xhtml2pdf import pisa
+from django.template.loader import get_template
 
 from .filters import ReservationsFilter
 
@@ -387,7 +390,46 @@ def delete_prebooking(name):
 #     return render(request,'admin_templates/parking.html')
     
 
-    
+def render_pdf_view(request,customer_id):
+    reservation = Reservation.objects.get(id=customer_id)
+    first_name = reservation.first_name
+    last_name = reservation.last_name
+    room_no = reservation.room_no
+    check_in = reservation.check_in
+    check_out = reservation.check_out
+    car_manufacturer = reservation.car_manufacturer
+    car_model = reservation.car_model
+    car_plates = reservation.car_plates
+    car_color = reservation.car_color
+
+    template_name = 'admin_templates/stamp.html'
+    context = {
+            'first_name': first_name,
+            'last_name': last_name,
+            'check_in': check_in,
+            'check_out': check_out,
+            'car_manufacturer':car_manufacturer,
+            'car_model': car_model,
+            'car_plates': car_plates,
+            'car_color': car_color,
+            'room_no':room_no
+            }
+    response = HttpResponse(content_type = 'application/pdf')
+    response['Content-Disposition'] = 'filename="report.pdf'
+    template = get_template(template_name)
+    html = template.render(context)
+    result=BytesIO()
+
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    if pisa_status.err:
+        return HttpResponse('<pre>We had some error'+html+'</pre>')
+    return response
+
+
+def pdf(request):
+    return render(request,'admin_templates/stamp.html')
 
         
     

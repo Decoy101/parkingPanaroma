@@ -3,6 +3,7 @@ Dashboard {% endblock title%} {% block main_content %}
 
 <script>
   var UpdateStatus = "{% url 'update_status' %}"
+
 </script>
 
 <div class="container-fluid">
@@ -32,6 +33,7 @@ Dashboard {% endblock title%} {% block main_content %}
       $.post(UpdateStatus,data)
     
   }
+
 
 </script>
 

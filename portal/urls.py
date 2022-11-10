@@ -29,6 +29,8 @@ urlpatterns = [
     path('parking',AdminViews.ParkingListView,name='parking'),
     path('customer_details/<int:reservation_id>',AdminViews.customer_view,name='customer_details'),    
     path('update_status',AdminViews.update_status, name='update_status'),
+    path('test-view/<customer_id>',AdminViews.render_pdf_view, name='test-view'),
+    path('pdf',AdminViews.pdf,name='pdf')
 
     # Staff URls
     # path('',views.loginPage, name='login'),
