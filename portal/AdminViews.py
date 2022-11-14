@@ -1,7 +1,9 @@
 import datetime
+from io import BytesIO
 from sqlite3 import Timestamp
 from django.contrib import messages
 from django.shortcuts import HttpResponse, get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.generic import ListView
 from django.db.models import Subquery, F,Sum, Q
 from django.db.models import Count
@@ -13,6 +15,8 @@ import time
 import datetime
 import pytz
 
+from xhtml2pdf import pisa
+from django.template.loader import get_template
 
 from .filters import ReservationsFilter
 
@@ -163,48 +167,50 @@ def new_entry_save(request):
         
 def edit_entry(request,entry_id):
     entry = Reservation.objects.get(id = entry_id)
-    parking_options = Reservation.objects.all()
+    form = EntryForm(request.POST or None, instance= entry)
     context = {
-        'entry':entry,
-        'parking_options': parking_options
+        'entry_form': form,
     }
-    return render(request,'admin_templates/edit_entry.html',context)
+    if request.method == "POST":
+        if form.is_valid():
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            room_no =form.cleaned_data['room_no']
+            phone_no =form.cleaned_data['phone_no']
+            check_in =form.cleaned_data['check_in']
+            check_out =form.cleaned_data['check_out']
+            car_manufacturer =form.cleaned_data['car_manufacturer']
+            car_model = form.cleaned_data['car_model']
+            car_plates = form.cleaned_data['car_plates']
+            car_color = form.cleaned_data['car_color']
+            car_parking = form.cleaned_data['car_parking']
+            vehicle_type = form.cleaned_data['vehicle_type']
+            parking_booking = form.cleaned_data['parking_booking']
+            try:
+                entry.first_name = first_name
+                entry.last_name = last_name
+                entry.phone_no = phone_no
+                entry.room_no = room_no
+                entry.check_in = check_in
+                entry.check_out = check_out
+                entry.car_manufacturer = car_manufacturer
+                entry.car_model = car_model
+                entry.car_color = car_color
+                entry.car_plates = car_plates
+                entry.car_parking = car_parking
+                entry.vehicle_type = vehicle_type
+                entry.parking_booking = parking_booking
+                entry.save()
+                messages.success(request, "Successfully Updated")
+                return redirect(reverse('edit_entry', args=[entry_id]))
+            except Exception as e:
+                messages.error(request,"Could not update" + str(e))
+        else:
+            messages.error(request, "Please Fill Form Properly!")
+    else:
+        return render(request,'admin_templates/edit_entry.html',context)
+                
 
-
-def edit_entry_save(request):
-    entry_id = request.POST.get('entry_id')
-    first_name = request.POST.get('first_name')
-    last_name = request.POST.get('last_name')
-    phone_no = request.POST.get('phone_no')
-    room_no = request.POST.get('room_no')
-    check_in = request.POST.get('check_in')
-    check_out = request.POST.get('check_out')
-    car_manufacturer = request.POST.get('car_manufacturer')
-    car_model = request.POST.get('car_model')
-    car_color = request.POST.get('car_color')
-    car_plates = request.POST.get('car_plates')
-    car_parking = request.POST.get('car_parking')
-    vehicle_type = request.POST.get('vehicle_type')
-    parking_booking = request.POST.get('parking_booking')
-    
-    entry = Reservation.objects.get(id=entry_id)
-    entry.first_name = first_name
-    entry.last_name = last_name
-    entry.phone_no = phone_no
-    entry.room_no = room_no
-    entry.check_in = check_in
-    entry.check_out = check_out
-    entry.car_manufacturer = car_manufacturer
-    entry.car_model = car_model
-    entry.car_color = car_color
-    entry.car_plates = car_plates
-    entry.car_parking = car_parking
-    entry.vehicle_type = vehicle_type
-    entry.parking_booking = parking_booking
-    entry.save()
-
-    messages.success(request,'Entry Updated')
-    return redirect('dashboard')
         
 
     
@@ -387,7 +393,46 @@ def delete_prebooking(name):
 #     return render(request,'admin_templates/parking.html')
     
 
-    
+def render_pdf_view(request,customer_id):
+    reservation = Reservation.objects.get(id=customer_id)
+    first_name = reservation.first_name
+    last_name = reservation.last_name
+    room_no = reservation.room_no
+    check_in = reservation.check_in
+    check_out = reservation.check_out
+    car_manufacturer = reservation.car_manufacturer
+    car_model = reservation.car_model
+    car_plates = reservation.car_plates
+    car_color = reservation.car_color
+
+    template_name = 'admin_templates/stamp.html'
+    context = {
+            'first_name': first_name,
+            'last_name': last_name,
+            'check_in': check_in,
+            'check_out': check_out,
+            'car_manufacturer':car_manufacturer,
+            'car_model': car_model,
+            'car_plates': car_plates,
+            'car_color': car_color,
+            'room_no':room_no
+            }
+    response = HttpResponse(content_type = 'application/pdf')
+    response['Content-Disposition'] = 'filename="report.pdf'
+    template = get_template(template_name)
+    html = template.render(context)
+    result=BytesIO()
+
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    if pisa_status.err:
+        return HttpResponse('<pre>We had some error'+html+'</pre>')
+    return response
+
+
+def pdf(request):
+    return render(request,'admin_templates/stamp.html')
 
         
     

@@ -18,7 +18,6 @@ urlpatterns = [
     path('new_entry',AdminViews.new_entry,name='new_entry'),
     path('new_entry_save',AdminViews.new_entry_save,name='new_entry_save'),
     path('edit_entry/<entry_id>',AdminViews.edit_entry,name='edit_entry'),
-    path('edit_entry_save/',AdminViews.edit_entry_save,name='edit_entry_save'),
     path('delete_entry/<entry_id>',AdminViews.delete_entry,name='delete_entry'),
     path('add_parking',AdminViews.add_parking,name='add_parking'),
     path('add_parking_save',AdminViews.add_parking_save,name='add_parking_save'),
@@ -29,6 +28,7 @@ urlpatterns = [
     path('parking',AdminViews.ParkingListView,name='parking'),
     path('customer_details/<int:reservation_id>',AdminViews.customer_view,name='customer_details'),    
     path('update_status',AdminViews.update_status, name='update_status'),
+    path('gen_stamp/<customer_id>',AdminViews.render_pdf_view, name='gen_stamp'),
 
     # Staff URls
     # path('',views.loginPage, name='login'),
