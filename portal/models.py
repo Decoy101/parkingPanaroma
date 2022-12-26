@@ -69,7 +69,7 @@ class Reservation(models.Model):
     car_model = models.CharField(max_length=100,blank=True)
     car_plates = models.CharField(max_length=10,blank=True)
     car_color = models.CharField(max_length=10,blank=True)
-    car_parking = models.ForeignKey(Parking,on_delete=models.CASCADE,related_name="parking")
+    car_parking = models.ForeignKey(Parking,on_delete=models.CASCADE,related_name="parking",blank=True,null=True)
     vehicle_choices = (
         ('CAR',"CAR"),
         ('BIKE','BIKE')

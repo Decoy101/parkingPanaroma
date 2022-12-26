@@ -34,6 +34,11 @@ Dashboard {% endblock title%} {% block main_content %}
     
   }
 
+  function updateParking(a,b){
+    var data = {'car_parking':a,'customer_id':b,'csrfmiddlewaretoken':'{{csrf_token}}'}
+    $.post("{% url 'update_parking' %}")
+  }
+
 
 </script>
 
