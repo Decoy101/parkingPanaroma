@@ -310,7 +310,8 @@ def ReservationListView(request):
     return render(request,'admin_templates/dashboard.html',context)
 
 def ParkingListView(request):
-    date = datetime.datetime.today().strftime("%Y-%m-%d")
+    date_today = datetime.datetime.today().strftime("%Y-%m-%d")
+    date = date_today
     if request.method == 'GET':
         date = request.GET.get('filterdate')
 
@@ -318,7 +319,11 @@ def ParkingListView(request):
     parking_options = parking_options.annotate(car_spots_reserved=Count('parking',filter=Q(parking__is_checked_in=True,parking__vehicle_type='CAR',parking__is_checked_out=False,parking__parking_booking='Yes')))
     parking_options = parking_options.annotate(bike_spots_reserved=Count('parking',filter=Q(parking__is_checked_in=True,parking__vehicle_type='BIKE',parking__is_checked_out=False,parking__parking_booking='Yes')))
     parking_options = parking_options.annotate(available=F('total')-F('car_spots_reserved')-F('bike_spots_reserved')-F('prebooking'))
-   
+    parking_options = parking_options.annotate(leaving=Count('parking',filter=Q(parking__check_out=date_today)))
+    parking_options = parking_options.annotate(arrival_availability_projection=F('available')+F('leaving'))
+    parking_options = parking_options.annotate(availability_projection1 = F('arrival_availability_projection')-F('prebooking'))
+    parking_options = parking_options.annotate(unbooked_arrivals=Count('parking',filter=Q(parking__parking_booking='No')))
+    parking_options = parking_options.annotate(availability_projection2=F('availability_projection1')-F('unbooked_arrivals'))
     context = {
         'parking_options': parking_options,
         'filterdate':date

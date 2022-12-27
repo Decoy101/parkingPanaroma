@@ -88,12 +88,12 @@
             <td>{{reservation.parking_booking}}</td>
             <td>
               <a class="open-customer" data-popup-url="{% url 'customer_details' reservation.id %}">
-                <button type="button" class="btn btn-primary">
+                <button type="button" class="btn btn-primary my-1">
                   <span class="fa fa-eye"></span>
                 </button>
               </a>
-              <a href="{% url 'edit_entry' reservation.id %}" class="btn btn-success">Edit</a>
-              <a href="{% url 'delete_entry' reservation.id %}" class="btn btn-danger">Delete</a>
+              <a href="{% url 'edit_entry' reservation.id %}" class="btn btn-success my-1">Edit</a>
+              <a href="{% url 'delete_entry' reservation.id %}" class="btn btn-danger my-1">Delete</a>
             </td>
           </tr>
           {% endfor %}
