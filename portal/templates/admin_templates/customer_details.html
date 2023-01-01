@@ -1,5 +1,5 @@
 
-
+{% load widget_tweaks %}
 
 
 <section class="content">
@@ -30,36 +30,58 @@
                 {{customer.check_out}}
             </div>
             <div>
-              <strong>Vehicle Type </strong>
+              <strong >Vehicle Type: </strong>
               {{customer.vehicle_type}}
           </div>
+
+            {% if customer.car_parking == NULL %}
+            <form action="{% url 'update_parking' %}" method="POST">
+              {% csrf_token %}
+              <strong><label for="parking">Choose a parking</label></strong>
+              <select name="parking" id="parking">
+                <option value="">---------</option>
+                {% for option in parking_options %}
+                <option value="{{option.id}}">{{option.name}}</option>
+                {% endfor %}
+              </select>
+              <input type="hidden" name="customer_id" value="{{customer.id}}">
+              <button id="check-in-button" type="submit">Click</button>
+            </form>
+
+            {% else %}
             <div>
-                <strong>Parking Alloted : </strong>
-                {{customer.car_parking}}
+              <strong>Parking Alloted : </strong>
+              {{customer.car_parking}}
             </div>
+            {% if not customer.is_checked_in %}
+          <button id="check-in-button" class="btn btn-primary">Check In</button>
+          {% endif %}
+          {% if customer.is_checked_in and not customer.is_checked_out %} 
+          <button id="check-out-button" class="btn btn-danger">Check Out</button>
+          {% endif %}
+          {% if not customer.is_checked_out %}
+          <a href="{% url 'gen_stamp' customer.id %}" class="btn btn-success">Generate stamp</a>
+          {% endif%}
+          </div>
+           
+            {% endif %}
+
+
+
             {% if customer.is_checked_in and customer.is_checked_out %}
           <div>
             <strong>Customer Reservation is Fulfilled</strong>
           </div>
           {% endif %}
           
-
-          {% if not customer.is_checked_in %}
-          <button id="check-in-button" class="btn btn-primary">Check In</button>
-          {% endif %}
-          {% if customer.is_checked_in and not customer.is_checked_out %} 
-          <button id="check-out-button" class="btn btn-danger">Check Out</button>
-          {% endif %}
-
-          {% if not customer.is_checked_out %}
-          <a href="{% url 'gen_stamp' customer.id %}" class="btn btn-success">Generate stamp</a>
-          {% endif%}
-          </div>
+         
           
           
     </div>
 </section>
 <script>
+   
+    
 
     $('#check-in-button').click(()=>{
         $('#check-in-button').prop("disabled",true);

@@ -97,14 +97,18 @@ WSGI_APPLICATION = 'parkingSystem.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd3hq09en2tik11',
-        'USER': 'lpbjrhvltzdxed',
-        'PASSWORD': 'ba0aeddb2e111f8ff25f510674a05af11946d60433201a1fffbd5e50b5e21fa1',
-        'URL': 'postgres://lpbjrhvltzdxed:ba0aeddb2e111f8ff25f510674a05af11946d60433201a1fffbd5e50b5e21fa1@ec2-34-241-90-235.eu-west-1.compute.amazonaws.com:5432/d3hq09en2tik11',
-        'HOST': 'ec2-34-241-90-235.eu-west-1.compute.amazonaws.com',
-        "PORT": '5432'
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'd3hq09en2tik11',
+    #     'USER': 'lpbjrhvltzdxed',
+    #     'PASSWORD': 'ba0aeddb2e111f8ff25f510674a05af11946d60433201a1fffbd5e50b5e21fa1',
+    #     'URL': 'postgres://lpbjrhvltzdxed:ba0aeddb2e111f8ff25f510674a05af11946d60433201a1fffbd5e50b5e21fa1@ec2-34-241-90-235.eu-west-1.compute.amazonaws.com:5432/d3hq09en2tik11',
+    #     'HOST': 'ec2-34-241-90-235.eu-west-1.compute.amazonaws.com',
+    #     "PORT": '5432'
+    # }
+    'default':{
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME':BASE_DIR / "db.sqlite3",
     }
 }
 

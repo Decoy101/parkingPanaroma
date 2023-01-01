@@ -14,3 +14,8 @@ class EntryForm(forms.ModelForm):
             'check_in': DateInput(),
             'check_out': DateInput()
         }
+
+class ParkingInput(forms.ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ('car_parking',)

@@ -3,8 +3,8 @@ Dashboard {% endblock title%} {% block main_content %}
 <section class="content">
   <div class="container-fluid">
     <br />
-    <div class="d-flex justify-content-between mb-2">
-      <h1 class="col-7">Parking Availability</h1>
+    <div class="d-flex justify-content-between mb-2 flex-wrap">
+      <h1 class="col-6">Parking Availability</h1>
       <!-- <div class="d-flex col-2 mr-3 ">
         
       </div> -->
@@ -15,83 +15,98 @@ Dashboard {% endblock title%} {% block main_content %}
 
 
 
-      <button class="col-2 ml-1" onclick="exportParkingData()">
+      <button class="col-3" onclick="exportParkingData()">
         <span class="glyphicon glyphicon-download"></span>
-        Download list
+        Download
       </button>
     </div>
-    <table class="table table-bordered" id="parking-data">
-      <thead>
-        <th scope="col" class="align-middle">Name</th>
-        <th scope="col" class="align-middle">Total Spaces</th>
-        <th scope="col" class="align-middle">Available Spaces</th>
-        <th scope="col" class="align-middle">Max Car Parking Capacity</th>
-        <th scope="col" class="align-middle">Max Bike Parking Capacity</th>
-        <th scope="col" class="align-middle">Car Spots Reserved</th>
-        <th scope="col" class="align-middle">Bike Spots Reserved</th>
-        <th scope="col" class="align-middle">Pre-Booking</th>
-        
-        {% if perms.app_label.is_superuser %}
-        <th scope="col" class="align-middle">Actions</th>
-        {% endif %}
-      </thead>
-      <tbody>
-        {% for parking in parking_options %}
-        {% if parking.available == parking.total %}
-        <tr style="border-left:7px solid rgba(113, 187, 2, 0.859);">
-          <td class="align-middle">{{parking.name}}</td>
-          <td class="align-middle">{{parking.total}}</td>
-          <td class="align-middle">{{parking.available}}</td>
-          <td class="align-middle">{{parking.max_car}}</td>
-          <td class="align-middle">{{parking.max_bike}}</td>
-          <td class="align-middle">{{parking.car_spots_reserved}}</td>
-          <td class="align-middle">{{parking.bike_spots_reserved}}</td>      
-          <td class="align-middle">{{parking.prebooking}}</td>
+    <div class="table-responsive">
+      <table class="table table-bordered" id="parking-data">
+        <thead>
+          <th scope="col" class="align-middle">Name</th>
+          <th scope="col" class="align-middle">Total Spaces</th>
+          <th scope="col" class="align-middle">Occupied Spots[CAR]</th>
+          <th scope="col" class="align-middle">Occupied Spots[BIKE]</th>
+          <th scope="col" class="align-middle">Currently Available</th>
+          <th scope="col" class="align-middle">Leaving</th>
+          <th scope="col" class="align-middle">Arrival Availability Projection</th>
+          <th scope="col" class="align-middle">Pre-Booking</th>
+          <th scope="col" class="align-middle">Availability Projection 1</th>
+          <th scope="col" class="align-middle">Unbooked Arrivals</th>
+          <th scope="col" class="align-middle">Availability Projection 2</th>
+  
           
           {% if perms.app_label.is_superuser %}
-          <td class="align-middle"> <a href="{% url 'edit_parking' parking.id %}" class="btn btn-success">Edit</a> <a href="{% url 'delete_parking' parking.id %}" class="btn btn-danger">Delete</a></td>
+          <th scope="col" class="align-middle">Actions</th>
           {% endif %}
-        </tr>
-        {% endif %}
-
-        {% if parking.available >= 10 and parking.available < parking.total %}
-        <tr style="border-left:7px solid yellow;">
-          <td class="align-middle">{{parking.name}}</td>
-          <td class="align-middle">{{parking.total}}</td>
-          <td class="align-middle">{{parking.available}}</td>
-          <td class="align-middle">{{parking.max_car}}</td>
-          <td class="align-middle">{{parking.max_bike}}</td>
-          <td class="align-middle">{{parking.car_spots_reserved}}</td>
-          <td class="align-middle">{{parking.bike_spots_reserved}}</td>      
-          <td class="align-middle">{{parking.prebooking}}</td>
-          
-          {% if perms.app_label.is_superuser %}
-          <td class="align-middle"> <a href="{% url 'edit_parking' parking.id %}" class="btn btn-success">Edit</a> <a href="{% url 'delete_parking' parking.id %}" class="btn btn-danger">Delete</a></td>
+        </thead>
+        <tbody>
+          {% for parking in parking_options %}
+          {% if parking.available == parking.total %}
+          <tr style="border-left:7px solid rgba(113, 187, 2, 0.859);">
+            <td class="align-middle">{{parking.name}}</td>
+            <td class="align-middle">{{parking.total}}</td>
+            <td class="align-middle">{{parking.car_spots_reserved}}</td>
+            <td class="align-middle">{{parking.bike_spots_reserved}}</td>
+            <td class="align-middle">{{parking.available}}</td>
+            <td class="align-middle">{{parking.leaving}}</td>
+            <td class="align-middle">{{parking.arrival_availability_projection}}</td>     
+            <td class="align-middle">{{parking.prebooking}}</td>
+            <td class="align-middle">{{parking.availability_projection1}}</td>
+            <td class="align-middle">{{parking.unbooked_arrivals}}</td>
+            <td class="align-middle">{{parking.availability_projection2}}</td>
+            
+            {% if perms.app_label.is_superuser %}
+            <td class="align-middle"> <a href="{% url 'edit_parking' parking.id %}" class="btn btn-success">Edit</a> <a href="{% url 'delete_parking' parking.id %}" class="btn btn-danger">Delete</a></td>
+            {% endif %}
+          </tr>
           {% endif %}
-        </tr>
-        {% endif %}
-
-
-
-        {% if parking.available == 0 %}
-        <tr style="border-left:7px solid red;">
-          <td class="align-middle">{{parking.name}}</td>
-          <td class="align-middle">{{parking.total}}</td>
-          <td class="align-middle">{{parking.available}}</td>
-          <td class="align-middle">{{parking.max_car}}</td>
-          <td class="align-middle">{{parking.max_bike}}</td>
-          <td class="align-middle">{{parking.car_spots_reserved}}</td>
-          <td class="align-middle">{{parking.bike_spots_reserved}}</td>      
-          <td class="align-middle">{{parking.prebooking}}</td>
-          
-          {% if perms.app_label.is_superuser %}
-          <td class="align-middle"> <a href="{% url 'edit_parking' parking.id %}" class="btn btn-success">Edit</a> <a href="{% url 'delete_parking' parking.id %}" class="btn btn-danger">Delete</a></td>
+  
+          {% if parking.available >= 10 and parking.available < parking.total %}
+          <tr style="border-left:7px solid yellow;">
+            <td class="align-middle">{{parking.name}}</td>
+            <td class="align-middle">{{parking.total}}</td>
+            <td class="align-middle">{{parking.car_spots_reserved}}</td>
+            <td class="align-middle">{{parking.bike_spots_reserved}}</td>
+            <td class="align-middle">{{parking.available}}</td>
+            <td class="align-middle">{{parking.leaving}}</td>
+            <td class="align-middle">{{parking.arrival_availability_projection}}</td>     
+            <td class="align-middle">{{parking.prebooking}}</td>
+            <td class="align-middle">{{parking.availability_projection1}}</td>
+            <td class="align-middle">{{parking.unbooked_arrivals}}</td>
+            <td class="align-middle">{{parking.availability_projection2}}</td>
+            
+            {% if perms.app_label.is_superuser %}
+            <td class="align-middle"> <a href="{% url 'edit_parking' parking.id %}" class="btn btn-success">Edit</a> <a href="{% url 'delete_parking' parking.id %}" class="btn btn-danger">Delete</a></td>
+            {% endif %}
+          </tr>
           {% endif %}
-        </tr>
-        {% endif %}
-        {% endfor %}
-      </tbody>
-    </table>
+  
+  
+  
+          {% if parking.available == 0 %}
+          <tr style="border-left:7px solid red;">
+            <td class="align-middle">{{parking.name}}</td>
+            <td class="align-middle">{{parking.total}}</td>
+            <td class="align-middle">{{parking.car_spots_reserved}}</td>
+            <td class="align-middle">{{parking.bike_spots_reserved}}</td>
+            <td class="align-middle">{{parking.available}}</td>
+            <td class="align-middle">{{parking.leaving}}</td>
+            <td class="align-middle">{{parking.arrival_availability_projection}}</td>     
+            <td class="align-middle">{{parking.prebooking}}</td>
+            <td class="align-middle">{{parking.availability_projection1}}</td>
+            <td class="align-middle">{{parking.unbooked_arrivals}}</td>
+            <td class="align-middle">{{parking.availability_projection2}}</td>
+            
+            {% if perms.app_label.is_superuser %}
+            <td class="align-middle"> <a href="{% url 'edit_parking' parking.id %}" class="btn btn-success">Edit</a> <a href="{% url 'delete_parking' parking.id %}" class="btn btn-danger">Delete</a></td>
+            {% endif %}
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
   
     {% if perms.app_label.is_superuser %}
@@ -115,8 +130,13 @@ Dashboard {% endblock title%} {% block main_content %}
       column5 = row.cells[4].innerHTML;
       column6 = row.cells[5].innerHTML;
       column7 = row.cells[6].innerHTML;
+      column8 = row.cells[7].innerHTML;
+      column9 = row.cells[8].innerHTML;
+      column10 = row.cells[9].innerHTML;
+      column11 = row.cells[10].innerHTML;
+      
 
-      rows.push([column1, column2, column3, column4, column5, column6,column7]);
+      rows.push([column1, column2, column3, column4, column5, column6,column7,column8,column9,column10,column11]);
     }
     csvContent = "data:text/csv;charset=utf-8,";
 
